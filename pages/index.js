@@ -12,7 +12,7 @@ function pickArray(x){
     for(const k of keys) if(Array.isArray(x[k])) return x[k];
     const anyArr=Object.values(x).find(v=>Array.isArray(v)); if(anyArr) return anyArr;
   }
-  return [x];  
+  return [x];   
 }
 export async function getServerSideProps(){
   try{
@@ -251,6 +251,7 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
 
