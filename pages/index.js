@@ -1,6 +1,6 @@
  // pages/index.js
 import { useEffect, useMemo, useState } from 'react';   
-    
+       
 const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico';
  
 // helpers de fetch/normalização
@@ -251,6 +251,7 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
 
