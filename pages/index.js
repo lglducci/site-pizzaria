@@ -7,7 +7,7 @@ const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapi
 function toNumber(x){ if(typeof x==='number') return x; if(typeof x==='string') return Number(x.replace(/\./g,'').replace(',','.'))||0; return 0; }
 function pickArray(x){
   if(Array.isArray(x)) return x;
-  if(x && typeof x==='object'){
+  if(x && typeof x==='object'){  
     const keys=['items','itens','data','rows','result','results','records','menu','cardapio','payload'];
     for(const k of keys) if(Array.isArray(x[k])) return x[k];
     const anyArr=Object.values(x).find(v=>Array.isArray(v)); if(anyArr) return anyArr;
@@ -251,6 +251,7 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
 
