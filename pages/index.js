@@ -59,6 +59,49 @@ export default function Home({ menu, error }){
   const [drawer,setDrawer]=useState(false);
   const { items,total,add,inc,dec,clear } = useCart();
 
+
+
+  // formata preço
+const fmt = (n) => Number(n || 0).toFixed(2);
+
+// adiciona item “simples” (não-pizza)
+const addSimple = (m) => {
+  add({
+    key: `${m.id}:U`,
+    id: m.id,
+    nome: m.nome,
+    preco: m.preco,
+    tamanho: null,
+  });
+};
+
+// adiciona pizza por tamanho
+const addSize = (m, size) => {
+  const price = size === 'M' ? m.preco_medio : m.preco_grande;
+  if (!price) return;
+  add({
+    key: `${m.id}:${size}`,
+    id: m.id,
+    nome: `${m.nome} (${size})`,
+    preco: price,
+    tamanho: size,
+  });
+};
+
+// adiciona “meia pizza” (metade do valor do tamanho G)
+const addHalf = (m) => {
+  if (!m.preco_grande) return;
+  const half = m.preco_grande / 2;
+  add({
+    key: `${m.id}:H`, // usa “H” para identificar 1/2; depois dá pra combinar 2 meias
+    id: m.id,
+    nome: `${m.nome} (1/2 G)`,
+    preco: half,
+    tamanho: '1/2',
+  });
+};
+
+
   const cats = useMemo(()=>{
     const set=new Set(menu.map(m=>m.categoria)); return ['TODOS',...Array.from(set)];
   },[menu]);
@@ -173,3 +216,4 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
