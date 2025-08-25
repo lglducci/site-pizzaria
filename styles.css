@@ -1,5 +1,5 @@
   :root{
-  --primary:#125550  ;          /* azul mais claro 1  #42a5f5, 120a8f */
+  --primary:#42a5f5  ;          /* azul mais claro 1  #42a5f5, 120a8f */
   --bg:#f6f9fc;
   --text:#1e3a8a;             /* texto azul */
   --muted:#6b7280;
@@ -20,7 +20,7 @@ main{ max-width:1200px; margin:0 auto; padding:20px }
 
 /* topo */
 .header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px }
-.title{ font-weight:800; font-size:20px }
+.title{ font-weight:800; font-size:16px }
 .badge{ background:#eaf3ff; color:var(--primary); border:1px solid #dbeafe; padding:4px 10px; border-radius:999px; font-size:12px }
 
 /* filtros */
