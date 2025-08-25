@@ -1,15 +1,19 @@
- // app/api/menu/route.js
+// SEM usar variável. Coloque aqui a URL que já abre o JSON no navegador.
+const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico';
+
 export async function GET() {
-  const url = process.env.N8N_MENU_URL;
-  if (!url) return new Response('N8N_MENU_URL ausente', { status: 500 });
+  try {
+    const r = await fetch(UPSTREAM, { cache: 'no-store', headers: { accept: 'application/json' } });
+    const text = await r.text();
+    if (!r.ok) return new Response(`Upstream ${r.status}: ${text}`, { status: 502 });
 
-  const r = await fetch(url, { cache: 'no-store', headers: { accept: 'application/json' } });
-  if (!r.ok) return new Response('Upstream ' + r.status, { status: 502 });
+    let data;
+    try { data = JSON.parse(text); } catch { return new Response('Upstream não retornou JSON', { status: 502 }); }
 
-  const data = await r.json().catch(() => null);
-  if (!data) return new Response('Upstream não retornou JSON', { status: 502 });
-
-  // garante array (se vier objeto único ou {data:[...]})
-  const arr = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : [data]);
-  return Response.json(arr);
+    // garante um array
+    const arr = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : [data]);
+    return Response.json(arr);
+  } catch (e) {
+    return new Response('Erro: ' + String(e), { status: 500 });
+  }
 }
