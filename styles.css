@@ -1,7 +1,14 @@
-:root{
-  --primary:#1e88e5; --bg:#f6f9fc; --text:#1f2937; --muted:#6b7280; --card:#ffffff; --border:#e5e7eb;
-  --ok:#10b981; --danger:#ef4444;
+ :root{
+  --primary:#42a5f5;  /* azul um pouco mais claro */
+  --bg:#f6f9fc;
+  --text:#1e3a8a;     /* azul no texto */
+  --muted:#6b7280;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --ok:#10b981;
+  --danger:#ef4444;
 }
+
 *{ box-sizing:border-box }
 html,body{ height:100% }
 body{ margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif }
