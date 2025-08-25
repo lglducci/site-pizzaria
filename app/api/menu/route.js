@@ -1,15 +1,25 @@
+ 
+// app/api/menu/route.js
 export async function GET() {
   try {
-    // Lê do env no servidor (não expõe no cliente)
     const url = process.env.N8N_MENU_URL;
     if (!url) return new Response('N8N_MENU_URL ausente', { status: 500 });
 
-    const r = await fetch(url, { cache: 'no-store' });
-    if (!r.ok) return new Response('Upstream n8n falhou', { status: 502 });
-
-    const data = await r.json();
-    return Response.json(data); // devolve JSON pro navegador
+    const r = await fetch(url, { cache: 'no-store', headers: { accept: 'application/json' } });
+    const text = await r.text(); // pega conteúdo mesmo se não for JSON
+    if (!r.ok) {
+      console.error('n8n upstream error', r.status, text);
+      return new Response(`Upstream falhou (${r.status}): ${text}`, { status: 502 });
+    }
+    try {
+      const data = JSON.parse(text);
+      return Response.json(data);
+    } catch {
+      // upstream não retornou JSON válido
+      return new Response(`Upstream não retornou JSON: ${text}`, { status: 502 });
+    }
   } catch (e) {
+    console.error('proxy error', e);
     return new Response('Erro: ' + String(e), { status: 500 });
   }
 }
