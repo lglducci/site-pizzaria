@@ -1,20 +1,15 @@
  // app/api/menu/route.js
-import { headers } from 'next/headers';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 export async function GET() {
   try {
-    const h = headers();
-    const host = h.get('x-forwarded-host') ?? h.get('host');
-    const proto = h.get('x-forwarded-proto') ?? 'https';
-    const url = `${proto}://${host}/menu.json`;
-
-    const r = await fetch(url, { cache: 'no-store', headers: { accept: 'application/json' } });
-    if (!r.ok) return new Response('menu.json não encontrado', { status: 500 });
-
-    const data = await r.json();
+    const file = path.join(process.cwd(), 'public', 'menu.json');
+    const buf = await fs.readFile(file, 'utf8');
+    const data = JSON.parse(buf);
     const arr = Array.isArray(data) ? data : [data];
     return Response.json(arr);
   } catch (e) {
-    return new Response('Erro: ' + String(e), { status: 500 });
+    return new Response('menu.json não encontrado ou inválido', { status: 500 });
   }
 }
