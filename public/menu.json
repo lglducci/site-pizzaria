@@ -1,0 +1,5 @@
+[
+  { "id": 1, "nome": "Margherita", "preco": 39.9, "categoria": "PIZZAS", "descricao": "Tomate, muçarela e manjericão", "imagem": "" },
+  { "id": 2, "nome": "Calabresa",  "preco": 42.9, "categoria": "PIZZAS", "descricao": "Calabresa e cebola",         "imagem": "" },
+  { "id": 124, "nome": "Fanta Laranja", "preco": 12, "categoria": "BEBIDAS", "descricao": "2L", "imagem": "" }
+]
