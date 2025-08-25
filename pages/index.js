@@ -90,20 +90,63 @@ export default function Home({ menu, error }){
   },[menu]);
   const list = useMemo(()=> cat==='TODOS'? menu : menu.filter(m=>m.categoria===cat), [menu,cat]);
 
-  const checkout = async ()=>{
-    try{
-      const payload = {
-        customer: null,
-        items: items.map(i=>({ id:i.id, nome:i.nome, preco:i.preco, qtd:i.qtd, tamanho:i.tamanho })),
-        total
-      };
-      const res = await fetch('/api/checkout',{ method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(payload) });
-      const txt = await res.text();
-      if(!res.ok){ alert('Erro no pedido: '+txt); return; }
-      try{ const j=JSON.parse(txt); alert('Pedido enviado! #' + (j.pedido_id||'')); }catch{ alert('Pedido enviado!'); }
-      clear(); setDrawer(false);
-    }catch(e){ alert('Falha: '+e); }
-  };
+
+
+
+
+
+
+
+
+ const checkout = async () => {
+  try {
+    const payload = {
+      customer: 'Cliente Web', // opcional
+      items: items.map(i => ({
+        id: i.id,
+        nome: i.nome,
+        preco: i.preco,
+        qtd: i.qtd,
+        tamanho: i.tamanho
+      })),
+      total
+    };
+
+    // Envia para seu webhook externo (n8n, por exemplo)
+    await fetch('https://SEU_WEBHOOK_AQUI', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    // Envia para o endpoint local atual
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const txt = await res.text();
+    if (!res.ok) {
+      alert('Erro no pedido: ' + txt);
+      return;
+    }
+
+    try {
+      const j = JSON.parse(txt);
+      alert('Pedido enviado! #' + (j.pedido_id || ''));
+    } catch {
+      alert('Pedido enviado!');
+    }
+
+    clear();
+    setDrawer(false);
+  } catch (e) {
+    alert('Falha: ' + e);
+  }
+};
+
+ 
 
   return (
     <main>
@@ -208,6 +251,7 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
 
