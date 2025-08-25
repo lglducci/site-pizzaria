@@ -176,7 +176,7 @@ export default function Home({ menu, error }){
               {items.map(it=>(
                 <div key={it.key} className="row">
                   <div style={{maxWidth:'60%'}}>
-                    <div style={{fontWeight:700}}>{it.id} - {it.nome}</div>
+                    <div style={{fontWeight:700}}>{it.id} </div>
                     <div style={{fontSize:12, color:'#666'}}>R$ {fmt(it.preco)}</div>
                   </div>
                   <div className="qty">
@@ -201,5 +201,6 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
