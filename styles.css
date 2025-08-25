@@ -37,7 +37,7 @@ main{ max-width:1200px; margin:0 auto; padding:20px }
 
 /* >>> FOTO MENOR <<< */
 .img{
-  height:90px;               /* ajuste aqui: 90px se quiser ainda menor */
+  height:96px;               /* ajuste aqui: 90px se quiser ainda menor */
   aspect-ratio:auto;          /* desliga o 4/3 e usa altura fixa */
   border-radius:10px;
   background:#edf2f7 center/cover no-repeat;
