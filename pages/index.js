@@ -113,7 +113,7 @@ export default function Home({ menu, error }){
     };
 
     // Envia para seu webhook externo (n8n, por exemplo)
-    await fetch('https://SEU_WEBHOOK_AQUI', {
+    await fetch('https://primary-production-d79b.up.railway.app/webhook/finalizapedido', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -251,6 +251,7 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
 
