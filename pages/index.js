@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico';
-console.log("Renderizando item do carrinho:", it);
+ 
 // helpers de fetch/normalização
 function toNumber(x){ if(typeof x==='number') return x; if(typeof x==='string') return Number(x.replace(/\./g,'').replace(',','.'))||0; return 0; }
 function pickArray(x){
@@ -251,6 +251,7 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
 
