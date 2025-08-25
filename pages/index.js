@@ -108,7 +108,7 @@ export default function Home({ menu, error }){
   return (
     <main>
       <div className="header">
-        <div className="title">🍕 Cardápio</div>
+        <div className="title">🍕 Cardápio La Cantina </div>
         <div className="badge">Itens: {menu.length}</div>
       </div>
 
@@ -208,6 +208,7 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
 
