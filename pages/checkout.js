@@ -70,9 +70,9 @@ export default function CheckoutPage() {
     padding: '20px',
     maxWidth: '420px',
     margin: 'auto',
-    width: '100vw',
-    minHeight: '100vh',
-    background: '#f4f7fb'
+    width: '90vw',
+    minHeight: '90vh',
+    background: '#ace1dc' //'#f4f7fb'
   }}
 >
       <h2 style={{ textAlign: 'center' }}>🧾 Finalizar Pedido</h2>
