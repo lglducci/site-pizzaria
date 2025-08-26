@@ -125,6 +125,7 @@ export default function Home({ menu, error }){
           <div key={item.id} className="card">
             <div className="img" style={{ backgroundImage:`url(${item.imagem || `https://picsum.photos/seed/${item.id}/800/600`})` }} />
             <div className="name">{item.nome}</div>
+          
             <div className="cat">{item.categoria}</div>
             <div style={{ fontSize:13, color:'#444', minHeight:30 }}>{item.descricao}</div>
 
@@ -176,7 +177,8 @@ export default function Home({ menu, error }){
               {items.map(it=>(
                 <div key={it.key} className="row">
                   <div style={{maxWidth:'60%'}}>
-                    <div style={{fontWeight:700}}>{it.nome}</div>
+                    
+                   <div style={{fontWeight:700}}>{it.id} - {it.nome}</div>
                     <div style={{fontSize:12, color:'#666'}}>R$ {fmt(it.preco)}</div>
                   </div>
                   <div className="qty">
@@ -201,3 +203,4 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
