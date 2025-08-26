@@ -94,9 +94,14 @@ export default function CheckoutPage() {
             <span>R$ {(item.preco * item.qtd).toFixed(2)}</span>
           </div>
         ))}
-        <div style={{ borderTop: '1px solid #ccc', marginTop: 10, paddingTop: 10, fontWeight: 'bold', fontSize: 16 }}>
-          Total: R$ {total.toFixed(2)}
-        </div>
+       <div style={{ marginTop: 10 }}>
+           <div style={{ fontSize: 14 }}>
+             🛵 Taxa de entrega: R$ 3,00
+           </div>
+           <strong style={{ fontSize: 16 }}>
+             Total: R$ {(total + 3).toFixed(2)}
+           </strong>
+         </div>
       </div>
 
 
