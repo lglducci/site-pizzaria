@@ -1,4 +1,4 @@
-// pages/checkout.js
+ // pages/checkout.js
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
@@ -11,8 +11,9 @@ export default function CheckoutPage() {
   const [endereco, setEndereco] = useState('');
   const [bairro, setBairro] = useState('');
   const [pagamento, setPagamento] = useState('');
+  const [erro, setErro] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // Carrega carrinho do localStorage
   useEffect(() => {
     try {
       const raw = localStorage.getItem('cart');
@@ -27,9 +28,12 @@ export default function CheckoutPage() {
 
   const enviarPedido = async () => {
     if (!nome || !telefone || !endereco || !bairro || !pagamento) {
-      alert('Preencha todos os campos.');
+      setErro('Preencha todos os campos obrigatórios.');
       return;
     }
+
+    setErro('');
+    setLoading(true);
 
     const payload = {
       cliente: { nome, telefone, endereco, bairro, pagamento },
@@ -55,40 +59,53 @@ export default function CheckoutPage() {
       router.push('/');
     } catch (e) {
       alert('Erro ao enviar pedido: ' + e.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <main style={{ padding: '20px', maxWidth: 500, margin: 'auto' }}>
-      <h2>📝 Finalizar Pedido</h2>
+    <main style={{ padding: '20px', maxWidth: 600, margin: 'auto', fontFamily: 'Arial' }}>
+      <h2 style={{ textAlign: 'center' }}>🧾 Finalizar Pedido</h2>
 
-      <label>Nome:</label>
-      <input value={nome} onChange={e => setNome(e.target.value)} placeholder="Seu nome" />
+      {erro && <div style={{ color: 'red', marginBottom: 10 }}>{erro}</div>}
 
-      <label>Telefone:</label>
-      <input value={telefone} onChange={e => setTelefone(e.target.value)} placeholder="(DDD) 90000-0000" />
-
-      <label>Endereço:</label>
-      <input value={endereco} onChange={e => setEndereco(e.target.value)} placeholder="Rua e número" />
-
-      <label>Bairro:</label>
-      <input value={bairro} onChange={e => setBairro(e.target.value)} placeholder="Bairro" />
-
-      <label>Forma de pagamento:</label>
-      <select value={pagamento} onChange={e => setPagamento(e.target.value)}>
-        <option value="">Selecione</option>
-        <option value="Dinheiro">Dinheiro</option>
-        <option value="Pix">Pix</option>
-        <option value="Cartão de Crédito">Cartão de Crédito</option>
-        <option value="Cartão de Débito">Cartão de Débito</option>
-      </select>
-
-      <div style={{ marginTop: 20 }}>
-        <strong>Total: R$ {total.toFixed(2)}</strong>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <input value={nome} onChange={e => setNome(e.target.value)} placeholder="👤 Seu nome completo" className="input" />
+        <input value={telefone} onChange={e => setTelefone(e.target.value)} placeholder="📞 Telefone com DDD" className="input" />
+        <input value={endereco} onChange={e => setEndereco(e.target.value)} placeholder="🏠 Rua, número" className="input" />
+        <input value={bairro} onChange={e => setBairro(e.target.value)} placeholder="📍 Bairro" className="input" />
+        <select value={pagamento} onChange={e => setPagamento(e.target.value)} className="input">
+          <option value="">💳 Forma de pagamento</option>
+          <option value="Dinheiro">Dinheiro</option>
+          <option value="Pix">Pix</option>
+          <option value="Cartão de Crédito">Cartão de Crédito</option>
+          <option value="Cartão de Débito">Cartão de Débito</option>
+        </select>
       </div>
 
-      <button style={{ marginTop: 20 }} className="btn primary" onClick={enviarPedido}>
-        Confirmar Pedido
+      <hr style={{ margin: '24px 0' }} />
+
+      <h4>🧺 Seu Pedido</h4>
+      <div style={{ background: '#f9f9f9', padding: 10, borderRadius: 6 }}>
+        {items.map((item, idx) => (
+          <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
+            <span>{item.qtd}x {item.nome}</span>
+            <span>R$ {(item.preco * item.qtd).toFixed(2)}</span>
+          </div>
+        ))}
+        <div style={{ borderTop: '1px solid #ccc', marginTop: 10, paddingTop: 10, fontWeight: 'bold', fontSize: 16 }}>
+          Total: R$ {total.toFixed(2)}
+        </div>
+      </div>
+
+      <button
+        className="btn primary"
+        style={{ marginTop: 24, width: '100%', padding: 12, fontSize: 16 }}
+        onClick={enviarPedido}
+        disabled={loading}
+      >
+        {loading ? 'Enviando...' : '✅ Confirmar Pedido'}
       </button>
     </main>
   );
