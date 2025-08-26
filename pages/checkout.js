@@ -114,8 +114,15 @@ export default function CheckoutPage() {
     </div>
   ))}
   <div style={{ borderTop: '1px solid #ccc', marginTop: 10, paddingTop: 10, fontWeight: 'bold', fontSize: 16 }}>
-      <strong>Total: R$ {total.toFixed(2)}</strong>
-       
+
+   <div style={{ marginTop: 10 }}>
+  <div style={{ fontSize: 14 }}>
+    🛵  <strong>Taxa de entrega: R$ 3,00 </strong>
+  </div>
+
+  <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #ccc' }} />
+      <strong> Total: R$ {(total + 3).toFixed(2)} </strong>
+           Total: R$ {(total + 3).toFixed(2)}
   </div>
 </div>
 
