@@ -122,7 +122,7 @@ export default function CheckoutPage() {
 
   <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #ccc' }} />
       <strong> Total: R$ {(total + 3).toFixed(2)} </strong>
-           Total: R$ {(total + 3).toFixed(2)}
+           
   </div>
 </div>
 
