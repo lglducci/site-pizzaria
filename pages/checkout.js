@@ -104,7 +104,7 @@ export default function CheckoutPage() {
 <div style={{ background: '#f9f9f9', padding: 10, borderRadius: 6 }}>
   {items.map((item, idx) => (
     <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
-      <span>{item.qtd}x <strong>#{item.id}</strong> {item.nome}</span>
+      <span>{item.qtd}x <strong>-{item.id}</strong> {item.nome}</span>
       <span>R$ {(item.preco * item.qtd).toFixed(2)}</span>
     </div>
   ))}
