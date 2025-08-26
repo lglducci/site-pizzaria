@@ -1,8 +1,8 @@
   // pages/index.js
 import { useEffect, useMemo, useState } from 'react';
 
-import { useRouter } from 'next/router';
-const router = useRouter();
+import Link from 'next/link';
+
 
 const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico';
 
@@ -199,9 +199,11 @@ export default function Home({ menu, error }){
             </div>
 
                 
-            <button className="btn primary" style={{marginTop:12}} disabled={!items.length} onClick={checkout}>
-              Finalizar pedido
-            </button>
+            <Link href="/checkout" legacyBehavior>
+              <a className="btn primary" style={{ marginTop: 12 }}>
+                Finalizar pedido
+              </a>
+            </Link>
 
                <button className="btn primary" onClick={() => router.push('/checkout')}>
                   Finalizar pedido
@@ -214,5 +216,6 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
