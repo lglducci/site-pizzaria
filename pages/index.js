@@ -1,18 +1,18 @@
- // pages/index.js
-import { useEffect, useMemo, useState } from 'react';   
-       
+  // pages/index.js
+import { useEffect, useMemo, useState } from 'react';
+
 const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico';
- 
+
 // helpers de fetch/normalização
 function toNumber(x){ if(typeof x==='number') return x; if(typeof x==='string') return Number(x.replace(/\./g,'').replace(',','.'))||0; return 0; }
 function pickArray(x){
   if(Array.isArray(x)) return x;
-  if(x && typeof x==='object'){  
+  if(x && typeof x==='object'){
     const keys=['items','itens','data','rows','result','results','records','menu','cardapio','payload'];
     for(const k of keys) if(Array.isArray(x[k])) return x[k];
     const anyArr=Object.values(x).find(v=>Array.isArray(v)); if(anyArr) return anyArr;
-  } 
-  return [x];   
+  }
+  return [x];
 }
 export async function getServerSideProps(){
   try{
@@ -90,68 +90,25 @@ export default function Home({ menu, error }){
   },[menu]);
   const list = useMemo(()=> cat==='TODOS'? menu : menu.filter(m=>m.categoria===cat), [menu,cat]);
 
-
-
-
-
-
-
-
-
- const checkout = async () => {
-  try {
-    const payload = {
-      customer: 'Cliente Web', // opcional
-      items: items.map(i => ({
-        id: i.id,
-        nome: i.nome,
-        preco: i.preco,
-        qtd: i.qtd,
-        tamanho: i.tamanho
-      })),
-      total
-    };
-
-    // Envia para seu webhook externo (n8n, por exemplo)
-    await fetch('https://primary-production-d79b.up.railway.app/webhook/finalizapedido', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    // Envia para o endpoint local atual
-    const res = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const txt = await res.text();
-    if (!res.ok) {
-      alert('Erro no pedido: ' + txt);
-      return;
-    }
-
-    try {
-      const j = JSON.parse(txt);
-      alert('Pedido enviado! #' + (j.pedido_id || ''));
-    } catch {
-      alert('Pedido enviado!');
-    }
-
-    clear();
-    setDrawer(false);
-  } catch (e) {
-    alert('Falha: ' + e);
-  }
-};
-
- 
+  const checkout = async ()=>{
+    try{
+      const payload = {
+        customer: null,
+        items: items.map(i=>({ id:i.id, nome:i.nome, preco:i.preco, qtd:i.qtd, tamanho:i.tamanho })),
+        total
+      };
+      const res = await fetch('/api/checkout',{ method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(payload) });
+      const txt = await res.text();
+      if(!res.ok){ alert('Erro no pedido: '+txt); return; }
+      try{ const j=JSON.parse(txt); alert('Pedido enviado! #' + (j.pedido_id||'')); }catch{ alert('Pedido enviado!'); }
+      clear(); setDrawer(false);
+    }catch(e){ alert('Falha: '+e); }
+  };
 
   return (
     <main>
       <div className="header">
-        <div className="title">🍕 Cardápio La Cantina </div>
+        <div className="title">🍕 Cardápio</div>
         <div className="badge">Itens: {menu.length}</div>
       </div>
 
@@ -219,10 +176,7 @@ export default function Home({ menu, error }){
               {items.map(it=>(
                 <div key={it.key} className="row">
                   <div style={{maxWidth:'60%'}}>
-                    <div style={{fontWeight:700}}>
-                  
-                   <div style={{fontWeight:700}}>{it.nome}</div>
-               
+                    <div style={{fontWeight:700}}>{it.nome}</div>
                     <div style={{fontSize:12, color:'#666'}}>R$ {fmt(it.preco)}</div>
                   </div>
                   <div className="qty">
@@ -247,21 +201,3 @@ export default function Home({ menu, error }){
     </main>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
