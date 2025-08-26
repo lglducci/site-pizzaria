@@ -84,26 +84,9 @@ export default function CheckoutPage() {
         </select>
       </div>
 
-      <hr style={{ margin: '24px 0' }} />
+      <hr style={{ margin: '20px 0' }} />
 
-      <h4>🧺 Seu Pedido</h4>
-      <div style={{ background: '#f9f9f9', padding: 10, borderRadius: 6 }}>
-        {items.map((item, idx) => (
-          <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
-            <span>{item.qtd}x {item.nome}</span>
-            <span>R$ {(item.preco * item.qtd).toFixed(2)}</span>
-          </div>
-        ))}
-       <div style={{ marginTop: 10 }}>
-           <div style={{ fontSize: 14 }}>
-             🛵 Taxa de entrega: R$ 3,00
-           </div>
-           <strong style={{ fontSize: 16 }}>
-             Total: R$ {(total + 3).toFixed(2)}
-           </strong>
-         </div>
-      </div>
-
+ 
 
 <h4>🧺 Seu Pedido</h4>
 <div style={{ background: '#f9f9f9', padding: 10, borderRadius: 6 }}>
