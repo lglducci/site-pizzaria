@@ -197,15 +197,18 @@ export default function Home({ menu, error }){
               <div>Total</div>
               <div>R$ {fmt(total)}</div>
             </div>
-
+              
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+                <Link href="/checkout" legacyBehavior>
+                  <a className="btn primary">
+                    Finalizar pedido
+                  </a>
+                </Link>
+              </div>
 
           
                 
-             <Link href="/checkout" legacyBehavior>
-              <a className="btn primary" style={{ marginTop: 12 }}>
-                Finalizar pedido
-              </a>
-            </Link>
+              
 
               
 
@@ -216,6 +219,7 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
 
