@@ -198,12 +198,12 @@ export default function Home({ menu, error }){
               <div>R$ {fmt(total)}</div>
             </div>
 
+
+          <button className="btn primary" style={{marginTop:12}} disabled={!items.length} onClick={checkout}>
+                  Finalizar pedido
+                </button>
                 
-            <Link href="/checkout" legacyBehavior>
-              <a className="btn primary" style={{ marginTop: 12 }}>
-                Finalizar pedido
-              </a>
-            </Link>
+             
 
               
 
@@ -214,6 +214,7 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
 
