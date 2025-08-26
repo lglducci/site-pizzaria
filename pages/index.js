@@ -220,12 +220,8 @@ export default function Home({ menu, error }){
                 <div key={it.key} className="row">
                   <div style={{maxWidth:'60%'}}>
                     <div style={{fontWeight:700}}>
-                    <span style={{ background: '#eee', padding: '2px 6px', borderRadius: '6px', fontSize: '12px', marginRight: '6px', color: '#333' }}>
-                        #{it.id}
-                      </span>
-                      {it.nome}
-                    </div>
-
+                  
+                   <div style={{fontWeight:700}}>{it.nome}</div>
                
                     <div style={{fontSize:12, color:'#666'}}>R$ {fmt(it.preco)}</div>
                   </div>
@@ -251,6 +247,7 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
 
