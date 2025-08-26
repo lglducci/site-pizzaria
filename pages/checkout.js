@@ -12,8 +12,9 @@ export default function CheckoutPage() {
   const [bairro, setBairro] = useState('');
   const [pagamento, setPagamento] = useState('');
   const [erro, setErro] = useState('');
+  const [comentario, setComentario] = useState('');
   const [loading, setLoading] = useState(false);
- const [comentario, setComentario] = useState('');
+ 
 
   useEffect(() => {
     try {
@@ -37,7 +38,7 @@ export default function CheckoutPage() {
     setLoading(true);
 
     const payload = {
-      cliente: { nome, telefone, endereco, bairro, pagamento },
+      cliente: { nome, telefone, endereco, bairro, pagamento, comentario },
       items: items.map(i => ({
         id: i.id,
         nome: i.nome,
