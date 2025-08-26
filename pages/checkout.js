@@ -99,6 +99,28 @@ export default function CheckoutPage() {
         </div>
       </div>
 
+
+<h4>🧺 Seu Pedido</h4>
+<div style={{ background: '#f9f9f9', padding: 10, borderRadius: 6 }}>
+  {items.map((item, idx) => (
+    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
+      <span>{item.qtd}x <strong>#{item.id}</strong> {item.nome}</span>
+      <span>R$ {(item.preco * item.qtd).toFixed(2)}</span>
+    </div>
+  ))}
+  <div style={{ borderTop: '1px solid #ccc', marginTop: 10, paddingTop: 10, fontWeight: 'bold', fontSize: 16 }}>
+      <strong>Total: R$ {total.toFixed(2)}</strong>
+       
+  </div>
+</div>
+
+
+
+
+
+
+         
+
       <button
         className="btn primary"
         style={{ marginTop: 24, width: '100%', padding: 12, fontSize: 16 }}
