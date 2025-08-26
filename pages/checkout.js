@@ -13,6 +13,7 @@ export default function CheckoutPage() {
   const [pagamento, setPagamento] = useState('');
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
+ const [comentario, setComentario] = useState('');
 
   useEffect(() => {
     try {
@@ -91,6 +92,14 @@ export default function CheckoutPage() {
           <option value="Cartão de Crédito">Cartão de Crédito</option>
           <option value="Cartão de Débito">Cartão de Débito</option>
         </select>
+       <label>Comentários:</label>
+            <textarea
+              value={comentario}
+              onChange={e => setComentario(e.target.value)}
+              placeholder="Ex: sem cebola, entrega no portão, troco para R$ 50,00"
+              rows={3}
+              style={{ resize: 'none' }}
+            />
       </div>
 
       <hr style={{ margin: '18x 0' }} />
