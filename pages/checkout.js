@@ -50,7 +50,7 @@ export default function CheckoutPage() {
     };
 
     try {
-      await fetch('https://primary-production-d79b.up.railway.app/webhook/finalizapedido', {
+      await fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedido', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
