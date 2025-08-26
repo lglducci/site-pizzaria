@@ -65,7 +65,7 @@ export default function CheckoutPage() {
   };
 
   return (
-    <main style={{ padding: '20px', maxWidth: 600, margin: 'auto', fontFamily: 'Arial' }}>
+    <main style={{ padding: '18px', maxWidth: 500, margin: 'auto', fontFamily: 'Arial' }}>
       <h2 style={{ textAlign: 'center' }}>🧾 Finalizar Pedido</h2>
 
       {erro && <div style={{ color: 'red', marginBottom: 10 }}>{erro}</div>}
@@ -84,7 +84,7 @@ export default function CheckoutPage() {
         </select>
       </div>
 
-      <hr style={{ margin: '20px 0' }} />
+      <hr style={{ margin: '18x 0' }} />
 
  
 
