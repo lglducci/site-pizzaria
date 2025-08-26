@@ -205,9 +205,7 @@ export default function Home({ menu, error }){
               </a>
             </Link>
 
-               <button className="btn primary" onClick={() => router.push('/checkout')}>
-                  Finalizar pedido
-                </button>
+              
 
                 
           </div>
@@ -216,6 +214,7 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
 
