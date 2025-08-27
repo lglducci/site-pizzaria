@@ -111,7 +111,10 @@ export default function Home({ menu, error }){
   return (
     <main>
       <div className="header">
-        <div className="title">🍕 Cardápio</div>
+     <strong style={{ fontSize: 16 }}>
+     <div className="title">🍕 Cardápio</div>
+  </strong>
+        
         <div className="badge">Itens: {menu.length}</div>
       </div>
 
@@ -219,6 +222,7 @@ export default function Home({ menu, error }){
     </main>
   );
 }
+
 
 
 
