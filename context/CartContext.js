@@ -4,6 +4,17 @@ import { smartAdd } from '../lib/cartSmartAdd';
 
 const CartCtx = createContext(null);
 
+const toNum = (x) => {
+  if (typeof x === 'number' && isFinite(x)) return x;
+  if (x == null) return 0;
+  const s = String(x)
+    .replace(/[^\d,.-]/g, '')
+    .replace(/\.(?=\d{3}(?:\D|$))/g, '')
+    .replace(',', '.');
+  const n = Number(s);
+  return isFinite(n) ? n : 0;
+};
+
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
 
@@ -20,7 +31,7 @@ export function CartProvider({ children }) {
   }, [items]);
 
   const total = useMemo(
-    () => items.reduce((s, it) => s + Number(it?.price ?? it?.preco ?? 0) * (it?.qtd || 1), 0),
+    () => items.reduce((s, it) => s + toNum(it?.price ?? it?.preco) * (it?.qtd || 1), 0),
     [items]
   );
 
