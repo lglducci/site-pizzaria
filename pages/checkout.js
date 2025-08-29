@@ -225,7 +225,7 @@ export default function Checkout() {
             Confirmar Pedido
           </button>
         </div>
-      </div>
+ 
     </main>
   );
 }
