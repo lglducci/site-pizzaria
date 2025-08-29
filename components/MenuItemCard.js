@@ -1,4 +1,4 @@
-// components/MenuItemCard.js
+ // components/MenuItemCard.js
 import { useCart } from '../context/CartContext';
 const fmt = (n) => Number(n || 0).toFixed(2);
 
@@ -17,29 +17,25 @@ export default function MenuItemCard({ item }) {
   };
 
   const addHalf = () => {
-    if (!item.preco_grande) return;
-    const meiaPrice = item.preco_grande / 2;
+    const base = item.preco_grande ?? item.preco ?? item.preco_medio;
+    if (!base) return;
+    const meiaPrice = Number(base) / 2;
     addItem({
       id: `${item.id}:H`,
-      name: `${item.nome} (1/2 G)`,
+      name: `${item.nome} (1/2)`,
       price: meiaPrice,
-      size: 'G',
-      isHalf: true, // <- detecta meia
+      size: 'G',       // ajuste se usar P/M/G diferentes
+      isHalf: true,    // chave para o smartAdd detectar “meia”
     });
   };
 
- // const isPizza = String(item.categoria || '').toUpperCase() === 'PIZZA';
-
-
-
-  // depois (mais robusto)
-const cat = String(item.categoria || '').toLowerCase();
-const isPizza = !!(
-  item.preco_grande ||           // tem preço por tamanho
-  item.preco_medio  ||
-  cat.includes('pizza') ||       // categoria contém "pizza"/"pizzas"
-  cat.includes('pizz')
-);
+  const cat = String(item.categoria || '').toLowerCase();
+  const isPizza = !!(
+    item.preco_grande ||
+    item.preco_medio  ||
+    cat.includes('pizza') ||
+    cat.includes('pizz')
+  );
 
   return (
     <div className="card">
@@ -54,11 +50,9 @@ const isPizza = !!(
       <div className="priceRow">
         {isPizza ? (
           <>
-            {item.preco_grande ? (
-              <button className="btn" onClick={addHalf}>
-                Meia • R$ {fmt(item.preco_grande / 2)}
-              </button>
-            ) : null}
+            <button className="btn" onClick={addHalf}>
+              Meia • R$ {fmt((item.preco_grande ?? item.preco ?? item.preco_medio || 0) / 2)}
+            </button>
             {item.preco_medio ? (
               <button className="btn" onClick={() => addSize('M')}>
                 Médio • R$ {fmt(item.preco_medio)}
