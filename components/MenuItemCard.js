@@ -1,5 +1,5 @@
- // components/MenuItemCard.js
-import { useCart } from '../context/CartContext';
+ import { useCart } from '../context/CartContext';
+
 const fmt = (n) => Number(n || 0).toFixed(2);
 
 export default function MenuItemCard({ item }) {
@@ -24,11 +24,12 @@ export default function MenuItemCard({ item }) {
       id: `${item.id}:H`,
       name: `${item.nome} (1/2)`,
       price: meiaPrice,
-      size: 'G',       // ajuste se usar P/M/G diferentes
-      isHalf: true,    // chave para o smartAdd detectar “meia”
+      size: 'G',      // ajuste se usar P/M/G diferentes
+      isHalf: true,   // chave para o smartAdd detectar “meia”
     });
   };
 
+  // Detector robusto de pizza
   const cat = String(item.categoria || '').toLowerCase();
   const isPizza = !!(
     item.preco_grande ||
@@ -37,12 +38,14 @@ export default function MenuItemCard({ item }) {
     cat.includes('pizz')
   );
 
+  // Imagem (sem template literal aninhado)
+  const fallback = `https://picsum.photos/seed/${encodeURIComponent(String(item.id))}/800/600`;
+  const imgUrl = item.imagem || fallback;
+  const bgStyle = { backgroundImage: 'url(' + imgUrl + ')' };
+
   return (
     <div className="card">
-      <div
-        className="img"
-        style={{ backgroundImage: `url(${item.imagem || `https://picsum.photos/seed/${item.id}/800/600`})` }}
-      />
+      <div className="img" style={bgStyle} />
       <div className="name">{item.nome}</div>
       <div className="cat">{item.categoria}</div>
       <div style={{ fontSize: 13, color: '#444', minHeight: 30 }}>{item.descricao}</div>
