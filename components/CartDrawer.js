@@ -1,8 +1,14 @@
  // components/CartDrawer.js
 import { useRouter } from 'next/router';
 import { useCart } from '../context/CartContext';
-import CartItem from './CartItem';
+//import CartItem from './CartItem';
 import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
+
+
+//- import CartDrawer from '../components/CartDrawer';
+ import dynamic from 'next/dynamic';
+ const CartDrawer = dynamic(() => import('../components/CartDrawer'), { ssr: false });
+
 
 const fmt = (n) => Number(n ?? 0).toFixed(2);
 
@@ -45,3 +51,4 @@ export default function CartDrawer({ open, onClose }) {
     </div>
   );
 }
+
