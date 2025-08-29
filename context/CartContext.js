@@ -24,6 +24,7 @@ export function CartProvider({ children }) {
       if (s) setItems(JSON.parse(s));
     } catch {}
   }, []);
+
   useEffect(() => {
     try {
       localStorage.setItem('cart', JSON.stringify(items));
@@ -41,26 +42,15 @@ export function CartProvider({ children }) {
     setItems((prev) => prev.flatMap((x) => (x.id === id ? ((x.qtd || 1) > 1 ? [{ ...x, qtd: x.qtd - 1 }] : []) : [x])));
   const clear = () => setItems([]);
 
-  return <CartCtx.Provider value={{ items, total, addItem, inc, dec, clear }}>{children}</CartCtx.Provider>;
+  return (
+    <CartCtx.Provider value={{ items, total, addItem, inc, dec, clear }}>
+      {children}
+    </CartCtx.Provider>
+  );
 }
 
-
-import { createContext, useContext } from 'react';
-// ...
-
-export const CartContext = createContext(null);
-
 export function useCart() {
-  const ctx = useContext(CartContext);
-  // Fallback no SSR/caso sem provider (evita "null.useContext")
-  if (!ctx) {
-    return {
-      items: [],
-      addItem: () => {},
-      removeItem: () => {},
-      clear: () => {},
-      setItems: () => {},
-    };
-  }
-  return ctx;
+  const ctx = useContext(CartCtx);
+  // fallback seguro se algum componente for avaliado fora do provider
+  return ctx ?? { items: [], total: 0, addItem: () => {}, inc: () => {}, dec: () => {}, clear: () => {} };
 }
