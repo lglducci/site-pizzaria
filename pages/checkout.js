@@ -110,7 +110,7 @@ export default function Checkout() {
     const msg = `${cabecalho}\n${linhasTxt}${rodape}`;
 
     // WhatsApp
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+    const url = `https://primary-production-d79b.up.railway.app/webhook/finalizapedido`;
     window.open(url, '_blank');
   };
 
