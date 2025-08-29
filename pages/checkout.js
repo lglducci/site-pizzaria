@@ -1,148 +1,85 @@
  // pages/checkout.js
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useEffect, useMemo, useState } from 'react';
+import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
+import { isHalfCombo, isHalfPending } from '../lib/pizzaFractions';
 
-export default function CheckoutPage() {
-  const router = useRouter();
+const fmt = (n) => Number(n ?? 0).toFixed(2);
+const toNum = (x) => {
+  if (typeof x === 'number' && isFinite(x)) return x;
+  if (x == null) return 0;
+  const s = String(x).replace(/[^\d,.-]/g, '').replace(/\.(?=\d{3}(?:\D|$))/g, '').replace(',', '.');
+  const n = Number(s);
+  return isFinite(n) ? n : 0;
+};
+
+export default function Checkout() {
   const [items, setItems] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [nome, setNome] = useState('');
-  const [telefone, setTelefone] = useState('');
-  const [endereco, setEndereco] = useState('');
-  const [bairro, setBairro] = useState('');
-  const [pagamento, setPagamento] = useState('');
-  const [erro, setErro] = useState('');
-  const [comentario, setComentario] = useState('');
-  const [loading, setLoading] = useState(false);
- 
-
   useEffect(() => {
     try {
-      const raw = localStorage.getItem('cart');
-      const list = raw ? JSON.parse(raw) : [];
-      setItems(list);
-      const total = list.reduce((sum, item) => sum + item.preco * item.qtd, 0);
-      setTotal(total);
-    } catch {
-      setItems([]);
-    }
+      const s = localStorage.getItem('cart');
+      if (s) setItems(JSON.parse(s));
+    } catch {}
   }, []);
 
-  const enviarPedido = async () => {
-    if (!nome || !telefone || !endereco || !bairro || !pagamento) {
-      setErro('Preencha todos os campos obrigatórios.');
-      return;
-    }
+  const total = useMemo(
+    () => items.reduce((s, it) => s + toNum(it?.price ?? it?.preco) * (it?.qtd || 1), 0),
+    [items]
+  );
 
-    setErro('');
-    setLoading(true);
+  const linhas = items.map((it) => {
+    const qtd = it?.qtd || 1;
+    const price = toNum(it?.price ?? it?.preco);
+    const descricao = isHalfCombo(it) || isHalfPending(it)
+      ? it.name                                     // “Meia 45 Confete (1/2) + ...”
+      : (it?.name || it?.nome || 'Item');           // simples
+    return { descricao, qtd, preco: price };
+  });
 
-    const payload = {
-      cliente: { nome, telefone, endereco, bairro, pagamento, comentario },
-      items: items.map(i => ({
-        id: i.id,
-        nome: i.nome,
-        qtd: i.qtd,
-        preco: i.preco,
-        tamanho: i.tamanho
-      })),
-      total
-    };
-
+  const confirmar = () => {
     try {
-      await fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedido', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      alert('Pedido enviado com sucesso!');
-      localStorage.removeItem('cart');
-      router.push('/');
+      ensureNoPendingFractions(items);
     } catch (e) {
-      alert('Erro ao enviar pedido: ' + e.message);
-    } finally {
-      setLoading(false);
+      alert(e.message); return;
     }
+    // Payload final (ajuste aqui para enviar aonde quiser)
+    const payload = {
+      itens: linhas,
+      total: total,
+    };
+    console.log('PAYLOAD:', payload);
+
+    alert(
+      'Exemplo de payload gerado (abra o console para ver completo):\n\n' +
+      linhas.map(l => `${l.qtd}x ${l.descricao} — R$ ${fmt(l.preco)}`).join('\n') +
+      `\n\nTotal: R$ ${fmt(total)}`
+    );
   };
 
   return (
-   <main
-  style={{
-    padding: '20px',
-    maxWidth: '420px',
-    margin: 'auto',
-    width: '90vw',
-    minHeight: '90vh',
-    background: '#ace1dc' //'#f4f7fb'
-  }}
->
-      <h2 style={{ textAlign: 'center' }}>🧾 Finalizar Pedido</h2>
-
-      {erro && <div style={{ color: 'red', marginBottom: 10 }}>{erro}</div>}
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <input value={nome} onChange={e => setNome(e.target.value)} placeholder="👤 Seu nome completo" className="input" />
-        <input value={telefone} onChange={e => setTelefone(e.target.value)} placeholder="📞 Telefone com DDD" className="input" />
-        <input value={endereco} onChange={e => setEndereco(e.target.value)} placeholder="🏠 Rua, número" className="input" />
-        <input value={bairro} onChange={e => setBairro(e.target.value)} placeholder="📍 Bairro" className="input" />
-        <select value={pagamento} onChange={e => setPagamento(e.target.value)} className="input">
-          <option value="">💳 Forma de pagamento</option>
-          <option value="Dinheiro">Dinheiro</option>
-          <option value="Pix">Pix</option>
-          <option value="Cartão de Crédito">Cartão de Crédito</option>
-          <option value="Cartão de Débito">Cartão de Débito</option>
-        </select>
-       <label>Comentários:</label>
-            <textarea
-              value={comentario}
-              onChange={e => setComentario(e.target.value)}
-              placeholder="Ex: sem cebola, entrega no portão, troco para R$ 50,00"
-              rows={3}
-              style={{ resize: 'none' }}
-            />
+    <main className="container" style={{ maxWidth: 720, margin: '20px auto' }}>
+      <h2>Seu pedido</h2>
+      <div style={{ marginTop: 12 }}>
+        {items.map((it) => (
+          <div key={it.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #eee' }}>
+            <div>
+              <div style={{ fontWeight: 700 }}>
+                {isHalfCombo(it) || isHalfPending(it) ? it.name : (it.name || it.nome)}
+              </div>
+              <div style={{ fontSize: 12, color: '#666' }}>R$ {fmt(toNum(it?.price ?? it?.preco))}</div>
+            </div>
+            <div style={{ fontWeight: 700 }}>x {it.qtd || 1}</div>
+          </div>
+        ))}
       </div>
 
-      <hr style={{ margin: '18x 0' }} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16, fontSize: 18, fontWeight: 700 }}>
+        <div>Total</div>
+        <div>R$ {fmt(total)}</div>
+      </div>
 
- 
-
-<h4>🧺 Seu Pedido</h4>
-<div style={{ background: '#f9f9f9', padding: 10, borderRadius: 6 }}>
-  {items.map((item, idx) => (
-    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
-      <span>{item.qtd}x <strong>-{item.id}</strong> {item.nome}</span>
-      <span>R$ {(item.preco * item.qtd).toFixed(2)}</span>
-    </div>
-  ))}
- <div style={{ marginTop: 10 }}>
-  <div style={{ fontSize: 14 }}>
-    🛵 Taxa de entrega: R$ 3,00
-  </div>
-
-  <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #ccc' }} />
-
-  <strong style={{ fontSize: 16 }}>
-    Total: R$ {(total + 3).toFixed(2)}
-  </strong>
-</div>
-</div>
-
-
-
-
-
-
-         
-
-      <button
-        className="btn primary"
-        style={{ marginTop: 24, width: '100%', padding: 12, fontSize: 16 }}
-        onClick={enviarPedido}
-        disabled={loading}
-      >
-        {loading ? 'Enviando...' : '✅ Confirmar Pedido'}
-      </button>
+      <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+        <button className="btn primary" onClick={confirmar}>Confirmar Pedido</button>
+      </div>
     </main>
   );
 }
