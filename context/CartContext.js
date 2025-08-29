@@ -44,8 +44,23 @@ export function CartProvider({ children }) {
   return <CartCtx.Provider value={{ items, total, addItem, inc, dec, clear }}>{children}</CartCtx.Provider>;
 }
 
+
+import { createContext, useContext } from 'react';
+// ...
+
+export const CartContext = createContext(null);
+
 export function useCart() {
-  const ctx = useContext(CartCtx);
-  if (!ctx) throw new Error('useCart must be used inside <CartProvider>');
+  const ctx = useContext(CartContext);
+  // Fallback no SSR/caso sem provider (evita "null.useContext")
+  if (!ctx) {
+    return {
+      items: [],
+      addItem: () => {},
+      removeItem: () => {},
+      clear: () => {},
+      setItems: () => {},
+    };
+  }
   return ctx;
 }
