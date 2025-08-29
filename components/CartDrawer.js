@@ -1,15 +1,14 @@
-// components/CartDrawer.js
+ // components/CartDrawer.js
 import { useRouter } from 'next/router';
 import { useCart } from '../context/CartContext';
 import CartItem from './CartItem';
 import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
 
-const fmt = (n) => Number(n || 0).toFixed(2);
+const fmt = (n) => Number(n ?? 0).toFixed(2);
 
 export default function CartDrawer({ open, onClose }) {
   const router = useRouter();
   const { items, total, inc, dec, clear } = useCart();
-
   if (!open) return null;
 
   const goCheckout = () => {
@@ -30,9 +29,7 @@ export default function CartDrawer({ open, onClose }) {
         </div>
 
         <div style={{ overflow: 'auto', flex: 1 }}>
-          {items.map((it) => (
-            <CartItem key={it.id} it={it} inc={inc} dec={dec} />
-          ))}
+          {items.map((it) => <CartItem key={it.id} it={it} inc={inc} dec={dec} />)}
           {!items.length && <div className="alert">Seu carrinho está vazio.</div>}
         </div>
 
@@ -42,9 +39,7 @@ export default function CartDrawer({ open, onClose }) {
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
-          <button className="btn primary" onClick={goCheckout}>
-            Finalizar pedido
-          </button>
+          <button className="btn primary" onClick={goCheckout}>Finalizar pedido</button>
         </div>
       </div>
     </div>
