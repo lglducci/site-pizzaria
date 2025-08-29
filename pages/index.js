@@ -6,7 +6,7 @@ import CartDrawer from '../components/CartDrawer';
 import { useCart } from '../context/CartContext';
 
 
-
+   
 const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico';
 
 function toNumber(x) {
@@ -106,4 +106,5 @@ function HomeInner({ menu, error }) {
 //}
 export default function Home(props) {
   return <HomeInner {...props} />;
+
 
