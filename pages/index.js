@@ -104,5 +104,6 @@ function HomeInner({ menu, error }) {
 ////    </CartProvider>
 //  );
 //}
-+ export default function Home(props) {
-+   return <HomeInner {...props} />;
+export default function Home(props) {
+  return <HomeInner {...props} />;
+
