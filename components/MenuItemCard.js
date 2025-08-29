@@ -28,7 +28,18 @@ export default function MenuItemCard({ item }) {
     });
   };
 
-  const isPizza = String(item.categoria || '').toUpperCase() === 'PIZZA';
+ // const isPizza = String(item.categoria || '').toUpperCase() === 'PIZZA';
+
+
+
+  // depois (mais robusto)
+const cat = String(item.categoria || '').toLowerCase();
+const isPizza = !!(
+  item.preco_grande ||           // tem preço por tamanho
+  item.preco_medio  ||
+  cat.includes('pizza') ||       // categoria contém "pizza"/"pizzas"
+  cat.includes('pizz')
+);
 
   return (
     <div className="card">
