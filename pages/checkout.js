@@ -98,6 +98,31 @@ export default function Checkout() {
       `Pagamento: ${pagamento}\n` +
       (comentarios.trim() ? `Observações: ${comentarios.trim()}\n` : '') +
       `\n*Itens:*`;
+   // Webhook
+fetch('https://SEU-WEBHOOK-AQUI/checkout', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    cliente: {
+      nome,
+      telefone,
+      endereco: `${ruaNumero} - ${bairro}`,
+      pagamento,
+      comentarios: (comentarios || '').trim() || null,
+    },
+    itens: linhas,               // [{ descricao, qtd, preco }]
+    subtotal: Number(subtotal),  // número
+    taxaEntrega: DELIVERY_FEE,   // número
+    total: Number(total),        // número
+  }),
+})
+.then(async (res) => {
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  alert('Pedido enviado com sucesso!');
+})
+.catch((err) => {
+  alert('Erro ao enviar pedido: ' + err.message);
+});
 
     const linhasTxt = linhas
       .map(l => `• ${l.qtd}x ${l.descricao} — R$ ${fmt(l.preco)}`)
