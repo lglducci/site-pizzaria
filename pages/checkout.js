@@ -3,6 +3,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
 import { isHalfCombo, isHalfPending } from '../lib/pizzaFractions';
 
+// >>>> CONFIGURE AQUI <<<<
+const WHATSAPP_NUMBER = '5599999999999'; // coloque DDI+DDD+NUMERO do estabelecimento
+const DELIVERY_FEE = 3.00;               // taxa de entrega padrão (edite se quiser)
+
 const fmt = (n) => Number(n ?? 0).toFixed(2);
 const toNum = (x) => {
   if (typeof x === 'number' && isFinite(x)) return x;
@@ -13,66 +17,82 @@ const toNum = (x) => {
 };
 
 export default function Checkout() {
+  // --------- FORM STATE ---------
+  const [nome, setNome] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [ruaNumero, setRuaNumero] = useState('');
+  const [bairro, setBairro] = useState('');
+  const [pagamento, setPagamento] = useState('');
+  const [comentarios, setComentarios] = useState('');
+
+  // --------- CART ---------
   const [items, setItems] = useState([]);
   useEffect(() => {
-    try { const s = localStorage.getItem('cart'); if (s) setItems(JSON.parse(s)); } catch {}
+    try {
+      const s = localStorage.getItem('cart');
+      if (s) setItems(JSON.parse(s));
+    } catch {}
   }, []);
 
-  const total = useMemo(
+  const subtotal = useMemo(
     () => items.reduce((s, it) => s + toNum(it?.price ?? it?.preco) * (it?.qtd || 1), 0),
     [items]
   );
+  const total = subtotal + DELIVERY_FEE;
 
-  const linhas = items.map((it) => {
-    const qtd = it?.qtd || 1;
-    const price = toNum(it?.price ?? it?.preco);
-    if (isHalfCombo(it) || isHalfPending(it)) {
-      return { descricao: it.name, qtd, preco: price };    // já inclui códigos das meias
-    }
+  // rótulo de exibição do item
+  const displayLine = (it) => {
+    if (isHalfCombo(it) || isHalfPending(it)) return it.name;
     const codeTxt = it?.code ? `${String(it.code).replace(/:.*/, '')}: ` : '';
     const sizeTxt = it?.size ? ` (${it.size})` : '';
-    const desc = `${codeTxt}${it?.name || it?.nome || 'Item'}${sizeTxt}`;
-    return { descricao: desc, qtd, preco: price };
-  });
-
-  const confirmar = () => {
-    try { ensureNoPendingFractions(items); } catch (e) { alert(e.message); return; }
-    const payload = { itens: linhas, total };
-    console.log('PAYLOAD:', payload);
-    alert(
-      linhas.map(l => `${l.qtd}x ${l.descricao} — R$ ${fmt(l.preco)}`).join('\n')
-      + `\n\nTotal: R$ ${fmt(total)}`
-    );
+    return `${codeTxt}${it?.name || it?.nome || 'Item'}${sizeTxt}`;
   };
 
-  return (
-    <main className="container" style={{ maxWidth: 720, margin: '20px auto' }}>
-      <h2>Seu pedido</h2>
-      <div style={{ marginTop: 12 }}>
-        {items.map((it) => (
-          <div key={it.id} style={{ display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px solid #eee' }}>
-            <div>
-              <div style={{ fontWeight: 700 }}>
-                {isHalfCombo(it) || isHalfPending(it)
-                  ? it.name
-                  : `${it?.code ? String(it.code).replace(/:.*/, '') + ': ' : ''}${it?.name || it?.nome || ''}${it?.size ? ` (${it.size})` : ''}`
-                }
-              </div>
-              <div style={{ fontSize: 12, color: '#666' }}>R$ {fmt(toNum(it?.price ?? it?.preco))}</div>
-            </div>
-            <div style={{ fontWeight: 700 }}>x {it.qtd || 1}</div>
-          </div>
-        ))}
-      </div>
+  // linhas para payload
+  const linhas = useMemo(() => {
+    return items.map((it) => ({
+      descricao: displayLine(it),
+      qtd: it?.qtd || 1,
+      preco: toNum(it?.price ?? it?.preco),
+    }));
+  }, [items]);
 
-      <div style={{ display:'flex', justifyContent:'space-between', marginTop:16, fontSize:18, fontWeight:700 }}>
-        <div>Total</div>
-        <div>R$ {fmt(total)}</div>
-      </div>
+  const validar = () => {
+    if (!nome.trim()) return 'Informe seu nome.';
+    if (!telefone.trim()) return 'Informe seu telefone.';
+    if (!ruaNumero.trim()) return 'Informe rua e número.';
+    if (!bairro.trim()) return 'Informe o bairro.';
+    if (!pagamento.trim()) return 'Escolha a forma de pagamento.';
+    try {
+      ensureNoPendingFractions(items);
+    } catch (e) {
+      return e.message || 'Há meias pizzas pendentes. Complete as frações.';
+    }
+    if (!items.length) return 'Seu carrinho está vazio.';
+    return null;
+  };
 
-      <div style={{ marginTop:16, display:'flex', justifyContent:'center' }}>
-        <button className="btn primary" onClick={confirmar}>Confirmar Pedido</button>
-      </div>
-    </main>
-  );
-}
+  const confirmar = () => {
+    const erro = validar();
+    if (erro) { alert(erro); return; }
+
+    const cabecalho =
+      `*Novo pedido*\n` +
+      `Nome: ${nome}\n` +
+      `Telefone: ${telefone}\n` +
+      `Endereço: ${ruaNumero} - ${bairro}\n` +
+      `Pagamento: ${pagamento}\n` +
+      (comentarios.trim() ? `Observações: ${comentarios.trim()}\n` : '') +
+      `\n*Itens:*`;
+
+    const linhasTxt = linhas
+      .map(l => `• ${l.qtd}x ${l.descricao} — R$ ${fmt(l.preco)}`)
+      .join('\n');
+
+    const rodape =
+      `\n\nTaxa de entrega: R$ ${fmt(DELIVERY_FEE)}` +
+      `\n*Total: R$ ${fmt(total)}*`;
+
+    const msg = `${cabecalho}\n${linhasTxt}${rodape}`;
+
+    // WhatsApp
