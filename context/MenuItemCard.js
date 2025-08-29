@@ -14,12 +14,9 @@ export default function MenuItemCard({ item }) {
   const addSize = (size) => {
     const price = size === 'M' ? item.preco_medio : item.preco_grande;
     if (!price) return;
-   // addItem({ id: `${item.id}:${size}`, name: `${item.nome} (${size})`, price, size });
+ 
      addItem({ id: `${item.id}:${size}`, name: item.nome, price, size });
   };
-
- 
-
 
 
  const addHalf = () => {
@@ -88,5 +85,6 @@ export default function MenuItemCard({ item }) {
     </div>
   );
 }
+
 
 
