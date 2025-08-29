@@ -165,30 +165,70 @@ export default function Checkout() {
         <span role="img" aria-label="cart">🧺</span> Seu pedido
       </h3>
 
-      <div style={{ background: '#d9ece9', padding: 16, borderRadius: 8 }}>
-        <div>
-          {items.map((it) => (
-            <div key={it.id}
-              style={{
-                display: 'flex', justifyContent: 'space-between',
-                padding: '10px 0', borderBottom: '1px solid #e5e7eb'
-              }}
-            >
-              <div style={{ maxWidth: '70%' }}>
-                <div style={{ fontWeight: 700 }}>
-                  {displayLine(it)}
-                  {isHalfPending(it) ? (
-                    <span style={{ marginLeft: 6, color: '#d97706' }}>(aguardando outra 1/2)</span>
-                  ) : null}
-                </div>
-                <div style={{ fontSize: 16, color: '#6b7280' }}>
-                  R$ {fmt(toNum(it?.price ?? it?.preco))}
-                </div>
-              </div>
-              <div style={{ fontWeight: 700 }}>x {it.qtd || 1}</div>
-            </div>
-          ))}
-        </div>
+    //  <div style={{ background: '#d9ece9', padding: 16, borderRadius: 8 }}>
+  //      <div>
+   //       {items.map((it) => (
+ //           <div key={it.id}
+ //             style={{
+ //               display: 'flex', justifyContent: 'space-between',
+ //               padding: '10px 0', borderBottom: '1px solid #e5e7eb'
+//              }}
+//            >
+ //             <div style={{ maxWidth: '70%' }}>
+ ////               <div style={{ fontWeight: 700 }}>
+  //                {displayLine(it)}
+  //                {isHalfPending(it) ? (
+ //                   <span style={{ marginLeft: 6, color: '#d97706' }}>(aguardando outra 1/2)</span>
+ //                 ) : null}
+     //           </div>
+              //  <div style={{ fontSize: 16, color: '#6b7280' }}>
+            //      R$ {fmt(toNum(it?.price ?? it?.preco))}
+        //        </div>
+        //      </div>
+        //      <div style={{ fontWeight: 700 }}>x {it.qtd || 1}</div>
+       //     </div>
+       //   ))}
+       // </div>
+
+
+         <div style={{ background: '#d9ece9', padding: 16, borderRadius: 8 }}>
+           <div>
+             {items.map((it) => (
+               <div
+                 key={it.id}
+                 style={{
+                   display: 'flex',
+                   justifyContent: 'space-between',
+                   alignItems: 'center',
+                   padding: '10px 0',
+                   borderBottom: '1px solid #e5e7eb',
+                 }}
+               >
+                 {/* ESQUERDA: "1 x 36 Clabresa Bacon (G)" */}
+                 <div style={{ maxWidth: '70%', fontWeight: 700 }}>
+                   {`${it.qtd || 1} x ${displayLine(it)}`}
+                   {isHalfPending(it) ? (
+                     <span style={{ marginLeft: 6, color: '#d97706', fontWeight: 400 }}>
+                       (aguardando outra 1/2)
+                     </span>
+                   ) : null}
+                 </div>
+         
+                 {/* DIREITA: preço em negrito */}
+                 <div style={{ fontWeight: 700 }}>
+                   <strong>R$ {fmt(toNum(it?.price ?? it?.preco))}</strong>
+                 </div>
+               </div>
+             ))}
+           </div>
+         </div>
+
+
+
+
+
+
+       
 
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
           <div>Subtotal</div>
