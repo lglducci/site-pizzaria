@@ -178,7 +178,7 @@ export default function Checkout() {
           borderBottom: '1px solid #e5e7eb',
         }}
       >
-        {/* ESQUERDA: "1 x 36 Clabresa Bacon (G)" */}
+     
         <div style={{ maxWidth: '70%', fontWeight: 700 }}>
           {`${it.qtd || 1} x ${displayLine(it)}`}
           {isHalfPending(it) ? (
@@ -186,9 +186,7 @@ export default function Checkout() {
               (aguardando outra 1/2)
             </span>
           ) : null}
-        </div>
-
-        {/* DIREITA: preço em negrito */}
+        </div> 
         <div style={{ fontWeight: 700 }}>
           <strong>R$ {fmt(toNum(it?.price ?? it?.preco))}</strong>
         </div>
