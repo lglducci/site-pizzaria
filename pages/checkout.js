@@ -99,7 +99,7 @@ export default function Checkout() {
       (comentarios.trim() ? `Observações: ${comentarios.trim()}\n` : '') +
       `\n*Itens:*`;
    // Webhook
-fetch('https://SEU-WEBHOOK-AQUI/checkout', {
+fetch('https://primary-production-d79b.up.railway.app/webhook/finalizapedido', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
