@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
 import { isHalfCombo, isHalfPending } from '../lib/pizzaFractions';
+import { isBorderCombo, ensureNoPendingBorders } from '../lib/borderAddon';
 
 // >>> CONFIGURE <<<
 const WHATSAPP_NUMBER = '5599999999999'; // DDI+DDD+NUM (ex.: 5511999999999)
@@ -54,7 +55,8 @@ export default function Checkout() {
 
 
  const displayLine = (it) => {
-    if (isHalfCombo(it) || isHalfPending(it)) return it.name; // combos/meias já vêm prontos
+ //   if (isHalfCombo(it) || isHalfPending(it)) return it.name; // combos/meias já vêm prontos
+    if (isHalfCombo(it) || isHalfPending(it) || isBorderCombo(it)) return it.name;
     const codeTxt = it?.code ? `${String(it.code).replace(/:.*/, '')} - ` : '';
    // remove (G|M|P) que já venha dentro do name
    const base = String(it?.name || it?.nome || 'Item').replace(/\s*\((G|M|P)\)\s*$/i, '');
