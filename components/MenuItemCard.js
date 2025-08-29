@@ -11,8 +11,9 @@ const num = (x) => {
 };
 
 export default function MenuItemCard({ item }) {
-  const { addItem } = useCart();
-  const { items, addItem } = useCart();
+  //const { addItem } = useCart();
+  //const { items, addItem } = useCart();
+ const { items, addItem } = useCart();
 
   const cat = String(item?.categoria || '').toLowerCase();
   const isPizza = Boolean(
