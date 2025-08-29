@@ -17,18 +17,38 @@ export default function MenuItemCard({ item }) {
     addItem({ id: `${item.id}:${size}`, name: `${item.nome} (${size})`, price, size });
   };
 
-  const addHalf = () => {
-    if (!item.preco_grande) return;
-    const meiaPrice = item.preco_grande / 2;
+ 
+
+
+
+ const addHalf = () => {
+    const base = item?.preco_grande ?? item?.preco ?? item?.valor ?? item?.preco_medio;
+    if (base == null) return;
+    const meiaPrice = num(base) / 2;
+    const code = item?.numero ?? item?.codigo ?? item?.id;
     addItem({
       id: `${item.id}:H`,
-      name: `${item.nome} (1/2 G)`,
+      name: `${item.nome} (1/2)`,
       price: meiaPrice,
+      preco: meiaPrice,
       size: 'G',
-      isHalf: true, // <- chave para o smartAdd detectar
+      isHalf: true,
+      code,           // <<< número vai junto
     });
   };
 
+
+
+
+
+
+
+
+
+
+
+
+  
   return (
     <div className="card">
       <div
@@ -67,3 +87,4 @@ export default function MenuItemCard({ item }) {
     </div>
   );
 }
+
