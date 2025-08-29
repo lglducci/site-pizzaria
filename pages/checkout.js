@@ -154,7 +154,7 @@ export default function Checkout() {
         <span role="img" aria-label="cart">🧺</span> Seu pedido
       </h3>
 
-      <div style={{ background: '#2bb29a', padding: 16, borderRadius: 8 }}>
+      <div style={{ background: '#d9ece9', padding: 16, borderRadius: 8 }}>
         <div>
           {items.map((it) => (
             <div key={it.id}
