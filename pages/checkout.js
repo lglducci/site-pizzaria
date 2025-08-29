@@ -181,7 +181,7 @@ export default function Checkout() {
                     <span style={{ marginLeft: 6, color: '#d97706' }}>(aguardando outra 1/2)</span>
                   ) : null}
                 </div>
-                <div style={{ fontSize: 12, color: '#6b7280' }}>
+                <div style={{ fontSize: 16, color: '#6b7280' }}>
                   R$ {fmt(toNum(it?.price ?? it?.preco))}
                 </div>
               </div>
