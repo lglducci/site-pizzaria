@@ -2,11 +2,20 @@
 import { useCart } from '../context/CartContext';
 
 const fmt = (n) => Number(n ?? 0).toFixed(2);
+const num = (x) => {
+  if (typeof x === 'number' && isFinite(x)) return x;
+  if (x == null) return 0;
+  const s = String(x)
+    .replace(/[^\d,.-]/g, '')            // remove R$, espaços, etc.
+    .replace(/\.(?=\d{3}(?:\D|$))/g, '') // remove separador de milhar
+    .replace(',', '.');
+  const n = Number(s);
+  return isFinite(n) ? n : 0;
+};
 
 export default function MenuItemCard({ item }) {
   const { addItem } = useCart();
 
-  // Labels e detecção
   const cat = String(item?.categoria || '').toLowerCase();
   const isPizza = Boolean(
     item?.preco_grande ||
@@ -15,35 +24,36 @@ export default function MenuItemCard({ item }) {
     cat.includes('pizz')
   );
 
-  const baseHalf = (item?.preco_grande ?? item?.preco ?? item?.preco_medio);
-  const halfLabel = fmt(((baseHalf ?? 0) / 2));
+  const baseHalf = item?.preco_grande ?? item?.preco ?? item?.valor ?? item?.preco_medio;
+  const halfLabel = fmt(num(baseHalf) / 2);
 
-  // Ações
   const addSimple = () => {
-    const p = (item?.preco_grande ?? item?.preco ?? item?.preco_medio ?? 0);
-    addItem({ id: `${item.id}:U`, name: item.nome, price: Number(p), size: null });
+    const p = item?.preco ?? item?.valor ?? item?.preco_grande ?? item?.preco_medio ?? 0;
+    const price = num(p);
+    addItem({ id: `${item.id}:U`, name: item.nome, price, preco: price, size: null });
   };
 
   const addSize = (size) => {
     const p = size === 'M' ? (item?.preco_medio ?? 0) : (item?.preco_grande ?? 0);
-    if (!p) return;
-    addItem({ id: `${item.id}:${size}`, name: `${item.nome} (${size})`, price: Number(p), size });
+    const price = num(p);
+    if (!price) return;
+    addItem({ id: `${item.id}:${size}`, name: `${item.nome} (${size})`, price, preco: price, size });
   };
 
   const addHalf = () => {
-    const base = (item?.preco_grande ?? item?.preco ?? item?.preco_medio);
+    const base = item?.preco_grande ?? item?.preco ?? item?.valor ?? item?.preco_medio;
     if (base == null) return;
-    const meiaPrice = Number(base) / 2;
+    const meiaPrice = num(base) / 2;
     addItem({
       id: `${item.id}:H`,
       name: `${item.nome} (1/2)`,
       price: meiaPrice,
-      size: 'G',      // ajuste se usar P/M/G diferentes
-      isHalf: true,   // chave para o smartAdd detectar “meia”
+      preco: meiaPrice,
+      size: 'G',
+      isHalf: true, // chave para detecção de meia
     });
   };
 
-  // Imagem
   const fallback = `https://picsum.photos/seed/${encodeURIComponent(String(item?.id))}/800/600`;
   const imgUrl = item?.imagem || item?.imagem_url || fallback;
   const bgStyle = { backgroundImage: 'url(' + imgUrl + ')' };
@@ -58,23 +68,17 @@ export default function MenuItemCard({ item }) {
       <div className="priceRow">
         {isPizza ? (
           <>
-            <button className="btn" onClick={addHalf}>
-              Meia • R$ {halfLabel}
-            </button>
+            <button className="btn" onClick={addHalf}>Meia • R$ {halfLabel}</button>
             {item?.preco_medio != null ? (
-              <button className="btn" onClick={() => addSize('M')}>
-                Médio • R$ {fmt(item.preco_medio)}
-              </button>
+              <button className="btn" onClick={() => addSize('M')}>Médio • R$ {fmt(num(item.preco_medio))}</button>
             ) : null}
             {item?.preco_grande != null ? (
-              <button className="btn primary" onClick={() => addSize('G')}>
-                Grande • R$ {fmt(item.preco_grande)}
-              </button>
+              <button className="btn primary" onClick={() => addSize('G')}>Grande • R$ {fmt(num(item.preco_grande))}</button>
             ) : null}
           </>
         ) : (
           <button className="btn primary" onClick={addSimple}>
-            Adicionar • R$ {fmt(item?.preco_grande ?? item?.preco ?? item?.preco_medio ?? 0)}
+            Adicionar • R$ {fmt(num(item?.preco ?? item?.valor ?? item?.preco_grande ?? item?.preco_medio ?? 0))}
           </button>
         )}
       </div>
