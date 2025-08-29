@@ -1,4 +1,7 @@
- // pages/index.js
+ 
+
+
+// pages/index.js
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { CartProvider, useCart } from '../context/CartContext';
@@ -91,3 +94,4 @@ export default function Home(props){
     </CartProvider>
   );
 }
+
