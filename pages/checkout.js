@@ -44,12 +44,23 @@ export default function Checkout() {
   const total = subtotal + DELIVERY_FEE;
 
   // rótulo de exibição do item
-  const displayLine = (it) => {
-    if (isHalfCombo(it) || isHalfPending(it)) return it.name;
-    const codeTxt = it?.code ? `${String(it.code).replace(/:.*/, '')}: ` : '';
-    const sizeTxt = it?.size ? ` (${it.size})` : '';
-    return `${codeTxt}${it?.name || it?.nome || 'Item'}${sizeTxt}`;
-  };
+//  const displayLine = (it) => {
+   // if (isHalfCombo(it) || isHalfPending(it)) return it.name;
+  //  const codeTxt = it?.code ? `${String(it.code).replace(/:.*/, '')}: ` : '';
+//    const sizeTxt = it?.size ? ` (${it.size})` : '';
+//    return `${codeTxt}${it?.name || it?.nome || 'Item'}${sizeTxt}`;
+//  };
+
+
+
+ const displayLine = (it) => {
++    if (isHalfCombo(it) || isHalfPending(it)) return it.name; // combos/meias já vêm prontos
++    const codeTxt = it?.code ? `${String(it.code).replace(/:.*/, '')}: ` : '';
++    // remove (G|M|P) que já venha dentro do name
++    const base = String(it?.name || it?.nome || 'Item').replace(/\s*\((G|M|P)\)\s*$/i, '');
++    const sizeTxt = it?.size ? ` (${String(it.size).toUpperCase()})` : '';
++    return `${codeTxt}${base}${sizeTxt}`;
++  };
 
   // linhas para payload
   const linhas = useMemo(() => {
