@@ -15,10 +15,7 @@ const toNum = (x) => {
 export default function Checkout() {
   const [items, setItems] = useState([]);
   useEffect(() => {
-    try {
-      const s = localStorage.getItem('cart');
-      if (s) setItems(JSON.parse(s));
-    } catch {}
+    try { const s = localStorage.getItem('cart'); if (s) setItems(JSON.parse(s)); } catch {}
   }, []);
 
   const total = useMemo(
@@ -29,29 +26,22 @@ export default function Checkout() {
   const linhas = items.map((it) => {
     const qtd = it?.qtd || 1;
     const price = toNum(it?.price ?? it?.preco);
-    const descricao = isHalfCombo(it) || isHalfPending(it)
-      ? it.name                                     // “Meia 45 Confete (1/2) + ...”
-      : (it?.name || it?.nome || 'Item');           // simples
-    return { descricao, qtd, preco: price };
+    if (isHalfCombo(it) || isHalfPending(it)) {
+      return { descricao: it.name, qtd, preco: price };    // já inclui códigos das meias
+    }
+    const codeTxt = it?.code ? `${String(it.code).replace(/:.*/, '')}: ` : '';
+    const sizeTxt = it?.size ? ` (${it.size})` : '';
+    const desc = `${codeTxt}${it?.name || it?.nome || 'Item'}${sizeTxt}`;
+    return { descricao: desc, qtd, preco: price };
   });
 
   const confirmar = () => {
-    try {
-      ensureNoPendingFractions(items);
-    } catch (e) {
-      alert(e.message); return;
-    }
-    // Payload final (ajuste aqui para enviar aonde quiser)
-    const payload = {
-      itens: linhas,
-      total: total,
-    };
+    try { ensureNoPendingFractions(items); } catch (e) { alert(e.message); return; }
+    const payload = { itens: linhas, total };
     console.log('PAYLOAD:', payload);
-
     alert(
-      'Exemplo de payload gerado (abra o console para ver completo):\n\n' +
-      linhas.map(l => `${l.qtd}x ${l.descricao} — R$ ${fmt(l.preco)}`).join('\n') +
-      `\n\nTotal: R$ ${fmt(total)}`
+      linhas.map(l => `${l.qtd}x ${l.descricao} — R$ ${fmt(l.preco)}`).join('\n')
+      + `\n\nTotal: R$ ${fmt(total)}`
     );
   };
 
@@ -60,10 +50,13 @@ export default function Checkout() {
       <h2>Seu pedido</h2>
       <div style={{ marginTop: 12 }}>
         {items.map((it) => (
-          <div key={it.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #eee' }}>
+          <div key={it.id} style={{ display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px solid #eee' }}>
             <div>
               <div style={{ fontWeight: 700 }}>
-                {isHalfCombo(it) || isHalfPending(it) ? it.name : (it.name || it.nome)}
+                {isHalfCombo(it) || isHalfPending(it)
+                  ? it.name
+                  : `${it?.code ? String(it.code).replace(/:.*/, '') + ': ' : ''}${it?.name || it?.nome || ''}${it?.size ? ` (${it.size})` : ''}`
+                }
               </div>
               <div style={{ fontSize: 12, color: '#666' }}>R$ {fmt(toNum(it?.price ?? it?.preco))}</div>
             </div>
@@ -72,12 +65,12 @@ export default function Checkout() {
         ))}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16, fontSize: 18, fontWeight: 700 }}>
+      <div style={{ display:'flex', justifyContent:'space-between', marginTop:16, fontSize:18, fontWeight:700 }}>
         <div>Total</div>
         <div>R$ {fmt(total)}</div>
       </div>
 
-      <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+      <div style={{ marginTop:16, display:'flex', justifyContent:'center' }}>
         <button className="btn primary" onClick={confirmar}>Confirmar Pedido</button>
       </div>
     </main>
