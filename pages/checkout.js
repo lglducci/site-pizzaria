@@ -86,7 +86,8 @@ export default function Checkout() {
     return null;
   };
 
-  const confirmar = () => {
+ /// const confirmar = () => {
+ const confirmar = async () => {
     const erro = validar();
     if (erro) { alert(erro); return; }
 
