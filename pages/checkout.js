@@ -261,7 +261,7 @@ fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedid
 
       {/* fundo da página */}
       <style jsx global>{`
-        body { background:  #e4e4e7; }
+        body { background:  #f1f5f9; }
       `}</style>
     </main>
   );
