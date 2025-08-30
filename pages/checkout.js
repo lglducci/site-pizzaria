@@ -169,7 +169,7 @@ fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedid
         />
         <input
           value={bairro} onChange={(e) => setBairro(e.target.value)}
-          placeholder="Bairro"
+          placeholder="Bairro" 
           style={inputStyle}
         />
 
