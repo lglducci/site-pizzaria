@@ -1,4 +1,4 @@
- // pages/checkout.js
+    // pages/checkout.js
 import { useEffect, useMemo, useState } from 'react';
 import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
 import { isHalfCombo, isHalfPending } from '../lib/pizzaFractions';
@@ -45,14 +45,24 @@ export default function Checkout() {
   const total = subtotal + DELIVERY_FEE;
 
   // rótulo de exibição do item
-  const displayLine = (it) => {
+//  const displayLine = (it) => {
+   // if (isHalfCombo(it) || isHalfPending(it)) return it.name;
+  //  const codeTxt = it?.code ? `${String(it.code).replace(/:.*/, '')}: ` : '';
+//    const sizeTxt = it?.size ? ` (${it.size})` : '';
+//    return `${codeTxt}${it?.name || it?.nome || 'Item'}${sizeTxt}`;
+//  };
+
+
+
+ const displayLine = (it) => {
+ //   if (isHalfCombo(it) || isHalfPending(it)) return it.name; // combos/meias já vêm prontos
     if (isHalfCombo(it) || isHalfPending(it) || isBorderCombo(it)) return it.name;
     const codeTxt = it?.code ? `${String(it.code).replace(/:.*/, '')} - ` : '';
-    // remove (G|M|P) no final do name
-    const base = String(it?.name || it?.nome || 'Item').replace(/\s*\((G|M|P)\)\s*$/i, '');
+   // remove (G|M|P) que já venha dentro do name
+   const base = String(it?.name || it?.nome || 'Item').replace(/\s*\((G|M|P)\)\s*$/i, '');
     const sizeTxt = it?.size ? ` (${String(it.size).toUpperCase()})` : '';
     return `${codeTxt}${base}${sizeTxt}`;
-  };
+ };
 
   // linhas para payload
   const linhas = useMemo(() => {
@@ -78,7 +88,8 @@ export default function Checkout() {
     return null;
   };
 
-  const confirmar = async () => {
+ /// const confirmar = () => {
+ const confirmar = async () => {
     const erro = validar();
     if (erro) { alert(erro); return; }
 
@@ -87,37 +98,36 @@ export default function Checkout() {
       `Nome: ${nome}\n` +
       `Telefone: ${telefone}\n` +
       `Endereço: ${ruaNumero}\n` +
-      `Bairro: ${bairro}\n` +
+       `Bairro: ${bairro}\n` +
       `Pagamento: ${pagamento}\n` +
       (comentarios.trim() ? `Observações: ${comentarios.trim()}\n` : '') +
       `\n*Itens:*`;
-
-    // Webhook
-    fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedido', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        cliente: {
-          nome,
-          telefone,
-          endereco: `${ruaNumero}`,
-          bairro: `${bairro}`,
-          pagamento,
-          comentarios: (comentarios || '').trim() || null,
-        },
-        itens: linhas,
-        subtotal: Number(subtotal),
-        taxaEntrega: DELIVERY_FEE,
-        total: Number(total),
-      }),
-    })
-      .then(async (res) => {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        alert('Pedido enviado com sucesso!');
-      })
-      .catch((err) => {
-        alert('Erro ao enviar pedido: ' + err.message);
-      });
+   // Webhook
+fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedido', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    cliente: {
+      nome,
+      telefone,
+      endereco: `${ruaNumero}`,
+      bairro: `${bairro}`,
+      pagamento,
+      comentarios: (comentarios || '').trim() || null,
+    },
+    itens: linhas,               // [{ descricao, qtd, preco }]
+    subtotal: Number(subtotal),  // número
+    taxaEntrega: DELIVERY_FEE,   // número
+    total: Number(total),        // número
+  }),
+})
+.then(async (res) => {
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  alert('Pedido enviado com sucesso!');
+})
+.catch((err) => {
+  alert('Erro ao enviar pedido: ' + err.message);
+});
 
     const linhasTxt = linhas
       .map(l => `• ${l.qtd}x ${l.descricao} — R$ ${fmt(l.preco)}`)
@@ -136,18 +146,14 @@ export default function Checkout() {
 
   return (
     <main className="container" style={{ maxWidth: 760, margin: '24px auto' }}>
-      <h2 style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#0f172a' }}>
+      <h2 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span role="img" aria-label="note">🧾</span> Finalizar Pedido
       </h2>
 
       {/* FORM */}
-      <div style={{
-        background: '#ffffff',
-        padding: 16,
-        borderRadius: 8,
-        marginBottom: 16,
-        border: '1px solid #e5e5e5'
-      }}>
+      <div style={{ background: '#ffffff', padding: 16, borderRadius: 8, marginBottom: 16 }}>
+    
+         
         <input
           value={nome} onChange={(e) => setNome(e.target.value)}
           placeholder="Seu nome completo"
@@ -165,7 +171,7 @@ export default function Checkout() {
         />
         <input
           value={bairro} onChange={(e) => setBairro(e.target.value)}
-          placeholder="Bairro"
+          placeholder="Bairro" 
           style={inputStyle}
         />
 
@@ -177,9 +183,7 @@ export default function Checkout() {
           <option value="Dinheiro">Dinheiro</option>
         </select>
 
-        <div style={{ marginTop: 8, marginBottom: 4, fontWeight: 600, color: '#0f172a' }}>
-          Comentários:
-        </div>
+        <div style={{ marginTop: 8, marginBottom: 4, fontWeight: 600 }}>Comentários:</div>
         <textarea
           value={comentarios} onChange={(e) => setComentarios(e.target.value)}
           placeholder="Ex: sem cebola, entrega no portão, troco para R$ 50,00"
@@ -189,95 +193,86 @@ export default function Checkout() {
       </div>
 
       {/* CART PREVIEW */}
-      <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#0f172a' }}>
+      <h3 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span role="img" aria-label="cart">🧺</span> Seu pedido
       </h3>
-
-      <div style={{
-        background: '#ffffff',
-        padding: 16,
-        borderRadius: 8,
-        border: '1px solid #e5e5e5'
-      }}>
-        <div>
-          {items.map((it) => (
-            <div
-              key={it.id}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '10px 0',
-                borderBottom: '1px solid #e5e5e5',
-              }}
-            >
-              <div style={{ maxWidth: '70%', fontWeight: 700, color: '#0f172a' }}>
-                {`${it.qtd || 1} x ${displayLine(it)}`}
-                {isHalfPending(it) ? (
-                  <span style={{ marginLeft: 6, color: '#d97706', fontWeight: 400 }}>
-                    (aguardando outra 1/2)
-                  </span>
-                ) : null}
-              </div>
-              <div style={{ fontWeight: 700, color: '#0f172a' }}>
-                <strong>R$ {fmt(toNum(it?.price ?? it?.preco))}</strong>
-              </div>
-            </div>
-          ))}
+       
+     <div style={{ background: '#d9ece9', padding: 16, borderRadius: 8 }}>
+  <div>
+    {items.map((it) => (
+      <div
+        key={it.id}
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '10px 0',
+          borderBottom: '1px solid #e5e7eb',
+        }}
+      >
+     
+        <div style={{ maxWidth: '70%', fontWeight: 700 }}>
+          {`${it.qtd || 1} x ${displayLine(it)}`}
+          {isHalfPending(it) ? (
+            <span style={{ marginLeft: 6, color: '#d97706', fontWeight: 400 }}>
+              (aguardando outra 1/2)
+            </span>
+          ) : null}
+        </div> 
+        <div style={{ fontWeight: 700 }}>
+          <strong>R$ {fmt(toNum(it?.price ?? it?.preco))}</strong>
         </div>
       </div>
+    ))}
+  </div>
+</div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, color: '#0f172a' }}>
-        <div>Subtotal</div>
-        <div>R$ {fmt(subtotal)}</div>
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, color: '#0f172a' }}>
-        <div>Taxa de entrega</div>
-        <div>R$ {fmt(DELIVERY_FEE)}</div>
-      </div>
-      <div style={{
-        display: 'flex', justifyContent: 'space-between',
-        marginTop: 8, fontWeight: 700, fontSize: 18, color: '#0f172a'
-      }}>
-        <div>Total</div>
-        <div>R$ {fmt(total)}</div>
-      </div>
 
-      <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
-        <button
-          className="btn primary"
-          onClick={confirmar}
-          style={{
-            background: '#dc2626', color: '#fff', padding: '10px 18px',
-            borderRadius: 8, border: 0, cursor: 'pointer'
-          }}
-        >
-          Confirmar Pedido
-        </button>
-      </div>
 
-      {/* HOVER DO BOTÃO E FUNDO DA PÁGINA */}
-      <style jsx>{`
-        .btn.primary:hover { background: #b91c1c; }
-        .btn.primary:active { transform: translateY(1px); }
-      `}</style>
+       
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
+          <div>Subtotal</div>
+          <div>R$ {fmt(subtotal)}</div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+          <div>Taxa de entrega</div>
+          <div>R$ {fmt(DELIVERY_FEE)}</div>
+        </div>
+        <div style={{
+          display: 'flex', justifyContent: 'space-between',
+          marginTop: 8, fontWeight: 700, fontSize: 18
+        }}>
+          <div>Total</div>
+          <div>R$ {fmt(total)}</div>
+        </div>
+
+        <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+          <button className="btn primary" onClick={confirmar}
+            style={{
+              background: '#3b82f6', color: '#fff', padding: '10px 18px',
+              borderRadius: 8, border: 0, cursor: 'pointer'
+            }}
+          >
+            Confirmar Pedido
+          </button>
+        </div>
+ 
+
+      {/* fundo da página */}
       <style jsx global>{`
-        body { background: #f5f5f5; }
+        body { background:  #f1f5f9; }
       `}</style>
     </main>
   );
 }
+
 const inputStyle = {
   width: '100%',
-  height: 44,
   padding: '10px 12px',
   borderRadius: 8,
-  border: '1px solid #e5e5e5',
+  border: '1px solid #e4e4e7',
   outline: 'none',
   marginBottom: 10,
-  background: '#fff',
-  color: '#0f172a',
-  boxSizing: 'border-box',
+  background: '#fff'
 };
-
- 
