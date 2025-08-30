@@ -1,14 +1,12 @@
- // pages/index.js
+  // pages/index.js
 import { useMemo, useState } from 'react';
-import { useCart } from '../context/CartContext';           // <- só o hook (Provider fica em _app.js)
+import { useCart } from '../context/CartContext';
 import MenuItemCard from '../components/MenuItemCard';
-import dynamic from 'next/dynamic';
 
-// CartDrawer só no client (evita erro no SSR)
-const CartDrawer = dynamic(() => import('../components/CartDrawer'), { ssr: false });
-
+// endpoint do cardápio
 const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico';
 
+// helpers
 function toNumber(x) {
   if (typeof x === 'number' && isFinite(x)) return x;
   if (x == null) return 0;
@@ -30,6 +28,7 @@ function pickArray(x) {
   return [x];
 }
 
+// SSR: busca o cardápio
 export async function getServerSideProps() {
   try {
     const r = await fetch(UPSTREAM, { headers: { accept: 'application/json' } });
@@ -48,55 +47,4 @@ export async function getServerSideProps() {
         nome,
         preco: toNumber(precoBase),
         preco_medio: toNumber(v?.preco_medio),
-        preco_grande: toNumber(v?.preco_grande),
-        categoria,
-        descricao: v?.descricao ?? '',
-        imagem,
-      };
-    });
-    return { props: { menu } };
-  } catch (e) {
-    return { props: { menu: [], error: String(e) } };
-  }
-}
-
-function HomeInner({ menu, error }) {
-  const [cat, setCat] = useState('TODOS');
-  const [drawer, setDrawer] = useState(false);
-  const { total } = useCart();
-
-  const cats = useMemo(() => {
-    const set = new Set(menu.map((m) => m.categoria));
-    return ['TODOS', ...Array.from(set)];
-  }, [menu]);
-
-  const list = useMemo(() => (cat === 'TODOS' ? menu : menu.filter((m) => m.categoria === cat)), [menu, cat]);
-
-  return (
-    <main>
-      <div className="header">
-        <strong style={{ fontSize: 32 }}><div className="title">🍕 Cardápio</div></strong>
-        <div className="badge">Itens: {menu.length}</div>
-      </div>
-
-      {error && <div className="alert">{error}</div>}
-
-      <div className="toolbar">
-        {cats.map((c) => (
-          <button key={c} className={`chip ${cat === c ? 'active' : ''}`} onClick={() => setCat(c)}>{c}</button>
-        ))}
-      </div>
-
-      <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
-        {list.map((item) => <MenuItemCard key={item.id} item={item} />)}
-      </div>
-
-      <button className="fab" onClick={() => setDrawer(true)}>🛒 R$ {Number(total ?? 0).toFixed(2)}</button>
-      <CartDrawer open={drawer} onClose={() => setDrawer(false)} />
-    </main>
-  );
-}
-
-export default function Home(props) {
-  return <HomeInner {...props} />;
-}
+        preco_grande:
