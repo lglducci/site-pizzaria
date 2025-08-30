@@ -1,0 +1,131 @@
+// pages/confirmacao.js
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+
+export default function Confirmacao() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    try {
+      const s = sessionStorage.getItem('pedido_confirmacao');
+      if (s) setData(JSON.parse(s));
+    } catch {}
+  }, []);
+
+  if (!data) {
+    return (
+      <main style={{ maxWidth: 760, margin: '24px auto', padding: 16 }}>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#0f172a' }}>
+          <span role="img" aria-label="check">✅</span> Confirmação de Pedido
+        </h2>
+        <div style={{
+          background: '#ffffff',
+          border: '1px solid #e5e5e5',
+          borderRadius: 8,
+          padding: 16
+        }}>
+          <p style={{ color: '#0f172a' }}>
+            Não encontrei dados deste pedido. Volte para o <Link href="/checkout">checkout</Link> e envie novamente.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  const { resposta, payloadEnviado, timestamp } = data;
+  const cliente = payloadEnviado?.cliente || {};
+  const valores = {
+    subtotal: payloadEnviado?.subtotal ?? 0,
+    taxaEntrega: payloadEnviado?.taxaEntrega ?? 0,
+    total: payloadEnviado?.total ?? 0,
+  };
+
+  // tenta identificar um id de pedido comum
+  const pedidoId = resposta?.id || resposta?.pedidoId || resposta?.numero || resposta?.raw;
+
+  return (
+    <main style={{ maxWidth: 760, margin: '24px auto', padding: 16 }}>
+      <h2 style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#0f172a' }}>
+        <span role="img" aria-label="check">✅</span> Pedido confirmado
+      </h2>
+
+      {/* Card principal */}
+      <div style={{
+        background: '#ffffff',
+        border: '1px solid #e5e5e5',
+        borderRadius: 8,
+        padding: 16,
+        marginBottom: 16
+      }}>
+        <p style={{ margin: 0, color: '#0f172a' }}>
+          Obrigado, <strong>{cliente.nome || 'cliente'}</strong>!
+        </p>
+        {pedidoId ? (
+          <p style={{ marginTop: 8, color: '#0f172a' }}>
+            Número/Retorno do pedido: <strong>{String(pedidoId)}</strong>
+          </p>
+        ) : null}
+        <p style={{ marginTop: 8, color: '#0f172a' }}>
+          Total: <strong>R$ {Number(valores.total).toFixed(2)}</strong>
+        </p>
+        <p style={{ marginTop: 8, color: '#0f172a' }}>
+          Enviado em: {new Date(timestamp).toLocaleString()}
+        </p>
+      </div>
+
+      {/* Card com itens enviados */}
+      <div style={{
+        background: '#ffffff',
+        border: '1px solid #e5e5e5',
+        borderRadius: 8,
+        padding: 16,
+        marginBottom: 16
+      }}>
+        <h3 style={{ marginTop: 0, color: '#0f172a' }}>Resumo do pedido</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, color: '#0f172a' }}>
+          <div>Subtotal</div>
+          <div>R$ {Number(valores.subtotal).toFixed(2)}</div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, color: '#0f172a' }}>
+          <div>Taxa de entrega</div>
+          <div>R$ {Number(valores.taxaEntrega).toFixed(2)}</div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontWeight: 700, fontSize: 18, color: '#0f172a' }}>
+          <div>Total</div>
+          <div>R$ {Number(valores.total).toFixed(2)}</div>
+        </div>
+
+        <ul style={{ marginTop: 12, paddingLeft: 18, color: '#0f172a' }}>
+          {(payloadEnviado?.itens || []).map((l, i) => (
+            <li key={i}>{l.qtd}x {l.descricao} — R$ {Number(l.preco).toFixed(2)}</li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Card debug do retorno bruto (útil enquanto integra) */}
+      <details style={{
+        background: '#ffffff',
+        border: '1px solid #e5e5e5',
+        borderRadius: 8,
+        padding: 16
+      }}>
+        <summary style={{ cursor: 'pointer', color: '#0f172a' }}>Ver retorno do servidor (debug)</summary>
+        <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#0f172a' }}>
+{JSON.stringify(resposta, null, 2)}
+        </pre>
+      </details>
+
+      <div style={{ marginTop: 16 }}>
+        <Link href="/"><button style={{
+          background: '#dc2626', color: '#fff',
+          padding: '10px 16px', border: 0, borderRadius: 8, cursor: 'pointer'
+        }}>Novo Pedido</button></Link>
+      </div>
+
+      {/* mesmo fundo da sua paleta */}
+      <style jsx global>{`
+        body { background: #f5f5f5; }
+      `}</style>
+    </main>
+  );
+}
