@@ -91,25 +91,18 @@ export default function Checkout() {
     return null;
   };
 
- /// const confirmar = () => {
- const confirmar = async () => {
-    const erro = validar();
-    if (erro) { alert(erro); return; }
 
-    const cabecalho =
-      `*Novo pedido*\n` +
-      `Nome: ${nome}\n` +
-      `Telefone: ${telefone}\n` +
-      `Endereço: ${ruaNumero}\n` +
-       `Bairro: ${bairro}\n` +
-      `Pagamento: ${pagamento}\n` +
-      (comentarios.trim() ? `Observações: ${comentarios.trim()}\n` : '') +
-      `\n*Itens:*`;
-   // Webhook
-fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedido', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
+
+
+    
+ /// const confirmar = () => {
+ 
+
+const confirmar = async () => {
+  const erro = validar();
+  if (erro) { alert(erro); return; }
+
+  const payload = {
     cliente: {
       nome,
       telefone,
@@ -118,20 +111,46 @@ fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedid
       pagamento,
       comentarios: (comentarios || '').trim() || null,
     },
-    itens: linhas,               // [{ descricao, qtd, preco }]
-    subtotal: Number(subtotal),  // número
-    taxaEntrega: DELIVERY_FEE,   // número
-    total: Number(total),        // número
-  }),
-})
-.then(async (res) => {
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  alert('Pedido enviado com sucesso!');
-})
-.catch((err) => {
-  alert('Erro ao enviar pedido: ' + err.message);
-});
+    itens: linhas,
+    subtotal: Number(subtotal),
+    taxaEntrega: DELIVERY_FEE,
+    total: Number(total),
+  };
 
+  try {
+    const res = await fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedido', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    let resposta;
+    const ct = res.headers.get('content-type') || '';
+    resposta = ct.includes('application/json') ? await res.json() : { raw: await res.text() };
+
+    sessionStorage.setItem('pedido_confirmacao', JSON.stringify({
+      resposta,
+      payloadEnviado: payload,
+      timestamp: Date.now(),
+    }));
+
+    // navega para a página de confirmação
+    router.push('/confirmacao');
+
+    // (opcional) limpa carrinho local
+    try { localStorage.removeItem('cart'); } catch {}
+  } catch (err) {
+    alert('Erro ao enviar pedido: ' + err.message);
+  }
+};
+
+
+
+
+
+
+     
     const linhasTxt = linhas
       .map(l => `• ${l.qtd}x ${l.descricao} — R$ ${fmt(l.preco)}`)
       .join('\n');
