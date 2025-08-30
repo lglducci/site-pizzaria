@@ -259,7 +259,7 @@ fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedid
 
       {/* fundo da página */}
       <style jsx global>{`
-        body { background: #eef2ff; }
+        body { background: #9CA3AF; }
       `}</style>
     </main>
   );
