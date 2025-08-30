@@ -96,7 +96,8 @@ export default function Checkout() {
 
     
  /// const confirmar = () => {
- 
+  
+
 
 const confirmar = async () => {
   const erro = validar();
@@ -123,29 +124,40 @@ const confirmar = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+
     if (!res.ok) throw new Error('HTTP ' + res.status);
 
-    let resposta;
+    // tenta ler como JSON, se não for, salva texto bruto
     const ct = res.headers.get('content-type') || '';
-    resposta = ct.includes('application/json') ? await res.json() : { raw: await res.text() };
+    let resposta;
+    try {
+      resposta = ct.includes('application/json')
+        ? await res.json()
+        : { raw: await res.text() };
+    } catch {
+      // fallback defensivo
+      resposta = { raw: await res.text?.() ?? '' };
+    }
 
-    sessionStorage.setItem('pedido_confirmacao', JSON.stringify({
-      resposta,
-      payloadEnviado: payload,
-      timestamp: Date.now(),
-    }));
+    // guarda dados para a próxima página
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(
+        'pedido_confirmacao',
+        JSON.stringify({
+          resposta,
+          payloadEnviado: payload,
+          timestamp: Date.now(),
+        })
+      );
+      try { localStorage.removeItem('cart'); } catch {}
+    }
 
     // navega para a página de confirmação
     router.push('/confirmacao');
-
-    // (opcional) limpa carrinho local
-    try { localStorage.removeItem('cart'); } catch {}
   } catch (err) {
     alert('Erro ao enviar pedido: ' + err.message);
   }
 };
-
-
 
 
 
