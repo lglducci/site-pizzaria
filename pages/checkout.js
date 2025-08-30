@@ -271,7 +271,7 @@ const inputStyle = {
   width: '100%',
   padding: '10px 12px',
   borderRadius: 8,
-  border: '1px solid #cbd5e1',
+  border: '1px solid #e4e4e7',
   outline: 'none',
   marginBottom: 10,
   background: '#fff'
