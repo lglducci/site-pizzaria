@@ -97,7 +97,8 @@ export default function Checkout() {
       `*Novo pedido*\n` +
       `Nome: ${nome}\n` +
       `Telefone: ${telefone}\n` +
-      `Endereço: ${ruaNumero} - ${bairro}\n` +
+      `Endereço: ${ruaNumero}\n` +
+       `Bairro: ${bairro}\n` +
       `Pagamento: ${pagamento}\n` +
       (comentarios.trim() ? `Observações: ${comentarios.trim()}\n` : '') +
       `\n*Itens:*`;
@@ -109,7 +110,8 @@ fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedid
     cliente: {
       nome,
       telefone,
-      endereco: `${ruaNumero} - ${bairro}`,
+      endereco: `${ruaNumero}`,
+      barrio: `${bairro}`,
       pagamento,
       comentarios: (comentarios || '').trim() || null,
     },
