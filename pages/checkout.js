@@ -1,4 +1,4 @@
-  // pages/checkout.js
+   // pages/checkout.js
 import { useEffect, useMemo, useState } from 'react';
 import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
 import { isHalfCombo, isHalfPending } from '../lib/pizzaFractions';
@@ -151,8 +151,7 @@ fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedid
       </h2>
 
       {/* FORM */}
-    //  <div style={{ background: '#c9eceb', padding: 16, borderRadius: 8, marginBottom: 16 }}>
-      <div style={{ background: '#ffffff', padding: 16, borderRadius: 8, marginBottom: 16 }}>
+      <div style={{ background: '#c9eceb', padding: 16, borderRadius: 8, marginBottom: 16 }}>
         <input
           value={nome} onChange={(e) => setNome(e.target.value)}
           placeholder="Seu nome completo"
@@ -196,8 +195,7 @@ fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedid
         <span role="img" aria-label="cart">🧺</span> Seu pedido
       </h3>
        
-   //  <div style={{ background: '#d9ece9', padding: 16, borderRadius: 8 }}>
-    div style={{ background: '#ffffff', padding: 16, borderRadius: 8 }}>
+     <div style={{ background: '#d9ece9', padding: 16, borderRadius: 8 }}>
   <div>
     {items.map((it) => (
       <div
@@ -267,13 +265,11 @@ fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedid
   );
 }
 
- 
-
 const inputStyle = {
   width: '100%',
   padding: '10px 12px',
-  borderRadius: 8, 
-  border: '1px solid #e5e7eb',
+  borderRadius: 8,
+  border: '1px solid #cbd5e1',
   outline: 'none',
   marginBottom: 10,
   background: '#fff'
