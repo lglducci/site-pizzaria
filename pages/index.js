@@ -1,4 +1,4 @@
-  // pages/index.js
+ // pages/index.js
 import { useMemo, useState } from 'react';
 import { useCart } from '../context/CartContext';
 import MenuItemCard from '../components/MenuItemCard';
