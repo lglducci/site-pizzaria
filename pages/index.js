@@ -97,14 +97,9 @@ function HomeInner({ menu, error }) {
   );
 }
 
-//export default function Home(props) {
-//  return (
-//    <CartProvider>
-//      <HomeInner {...props} />
-////    </CartProvider>
-//  );
-//}
+ 
 export default function Home(props) {
   return <HomeInner {...props} />;
+
 
 
