@@ -29,6 +29,8 @@ export default function Checkout() {
   const [bairro, setBairro] = useState('');
   const [pagamento, setPagamento] = useState('');
   const [comentarios, setComentarios] = useState('');
+  const router = useRouter();
+  
 
   // --------- CART ---------
   const [items, setItems] = useState([]);
