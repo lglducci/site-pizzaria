@@ -301,12 +301,7 @@ export default function Checkout() {
         </button>
       </div>
 
-  {/* ADICIONE AQUI */}
-      <style jsx global>{`
-        body { background: #eef2ff; } /* cor de fora */
-      `}</style>
-    </main>
-
+ 
 
       {/* CHANGE: estilos de foco/hover e grid responsiva com styled-jsx */}
       <style jsx>{`
@@ -331,6 +326,8 @@ export default function Checkout() {
           box-shadow: 0 0 0 3px rgba(14,165,233,0.15);
         }
       `}</style>
+
+      body { background: #eef2ff; } /* cor de fora */
     </main>
   );
 }
