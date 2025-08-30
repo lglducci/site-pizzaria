@@ -1,7 +1,9 @@
- // pages/index.js
-import { useMemo, useState } from 'react';
+ import { useMemo, useState } from 'react';
 import { useCart } from '../context/CartContext';
 import MenuItemCard from '../components/MenuItemCard';
+import dynamic from 'next/dynamic';
+const CartDrawer = dynamic(() => import('../components/CartDrawer'), { ssr: false });
+
 
 // endpoint do cardápio
 const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico';
@@ -48,3 +50,7 @@ export async function getServerSideProps() {
         preco: toNumber(precoBase),
         preco_medio: toNumber(v?.preco_medio),
         preco_grande:
+
+export default function Home(props) {
+  return <HomeInner {...props} />;
+}
