@@ -267,10 +267,17 @@ export default function Checkout() {
     </main>
   );
 }
-
 const inputStyle = {
   width: '100%',
+  height: 44,
   padding: '10px 12px',
   borderRadius: 8,
   border: '1px solid #e5e5e5',
-  outline: '
+  outline: 'none',
+  marginBottom: 10,
+  background: '#fff',
+  color: '#0f172a',
+  boxSizing: 'border-box',
+};
+
+ 
