@@ -14,7 +14,7 @@ const toNum = (x) => {
   const n = Number(s);
   return isFinite(n) ? n : 0;
 };
-
+ 
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
 
