@@ -151,7 +151,9 @@ fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedid
       </h2>
 
       {/* FORM */}
-      <div style={{ background: '#c9eceb', padding: 16, borderRadius: 8, marginBottom: 16 }}>
+      <div style={{ background: '#ffffff', padding: 16, borderRadius: 8, marginBottom: 16 }}>
+    
+         
         <input
           value={nome} onChange={(e) => setNome(e.target.value)}
           placeholder="Seu nome completo"
