@@ -327,7 +327,16 @@ export default function Checkout() {
         }
       `}</style>
 
-      body { background: #eef2ff; } /* cor de fora */
+       <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+        <button className="btn primary" onClick={confirmar} style={btnStyle}>
+          Confirmar Pedido
+        </button>
+      </div>
+
+      {/* fundo da página */}
+      <style jsx global>{`
+        body { background: #eef2ff; }
+      `}</style>
     </main>
   );
 }
