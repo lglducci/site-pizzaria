@@ -102,7 +102,7 @@ export default function Checkout() {
       (comentarios.trim() ? `Observações: ${comentarios.trim()}\n` : '') +
       `\n*Itens:*`;
    // Webhook
-fetch('https://primary-production-d79b.up.railway.app/webhook/finalizapedido', {
+fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedido', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -138,7 +138,7 @@ fetch('https://primary-production-d79b.up.railway.app/webhook/finalizapedido', {
     const msg = `${cabecalho}\n${linhasTxt}${rodape}`;
 
     // WhatsApp
-    const url = `https://primary-production-d79b.up.railway.app/webhook/finalizapedido`;
+    const url = `https://primary-production-d79b.up.railway.app/webhook-test/finalizapedido`;
     window.open(url, '_blank');
   };
 
