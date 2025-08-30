@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
 import { isHalfCombo, isHalfPending } from '../lib/pizzaFractions';
 import { isBorderCombo, ensureNoPendingBorders } from '../lib/borderAddon';
+import { useRouter } from 'next/router';
 
 // >>> CONFIGURE <<<
 const WHATSAPP_NUMBER = '5599999999999'; // DDI+DDD+NUM (ex.: 5511999999999)
