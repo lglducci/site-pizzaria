@@ -1,12 +1,12 @@
  // pages/index.js
 import { useMemo, useState } from 'react';
-import { CartProvider, useCart } from '../context/CartContext';
+import { useCart } from '../context/CartContext';           // <- só o hook (Provider fica em _app.js)
 import MenuItemCard from '../components/MenuItemCard';
-import CartDrawer from '../components/CartDrawer'; 
-import { useCart } from '../context/CartContext';
+import dynamic from 'next/dynamic';
 
+// CartDrawer só no client (evita erro no SSR)
+const CartDrawer = dynamic(() => import('../components/CartDrawer'), { ssr: false });
 
-   
 const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico';
 
 function toNumber(x) {
@@ -97,9 +97,6 @@ function HomeInner({ menu, error }) {
   );
 }
 
- 
 export default function Home(props) {
   return <HomeInner {...props} />;
-
-
-
+}
