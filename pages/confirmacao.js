@@ -1,4 +1,4 @@
-// pages/confirmacao.js
+ // pages/confirmacao.js
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
@@ -19,7 +19,7 @@ export default function Confirmacao() {
           <span role="img" aria-label="check">✅</span> Confirmação de Pedido
         </h2>
         <div style={{
-          background: '#ffffff',
+          background: '#fff',
           border: '1px solid #e5e5e5',
           borderRadius: 8,
           padding: 16
@@ -39,8 +39,6 @@ export default function Confirmacao() {
     taxaEntrega: payloadEnviado?.taxaEntrega ?? 0,
     total: payloadEnviado?.total ?? 0,
   };
-
-  // tenta identificar um id de pedido comum
   const pedidoId = resposta?.id || resposta?.pedidoId || resposta?.numero || resposta?.raw;
 
   return (
@@ -49,9 +47,8 @@ export default function Confirmacao() {
         <span role="img" aria-label="check">✅</span> Pedido confirmado
       </h2>
 
-      {/* Card principal */}
       <div style={{
-        background: '#ffffff',
+        background: '#fff',
         border: '1px solid #e5e5e5',
         borderRadius: 8,
         padding: 16,
@@ -73,9 +70,8 @@ export default function Confirmacao() {
         </p>
       </div>
 
-      {/* Card com itens enviados */}
       <div style={{
-        background: '#ffffff',
+        background: '#fff',
         border: '1px solid #e5e5e5',
         borderRadius: 8,
         padding: 16,
@@ -102,19 +98,6 @@ export default function Confirmacao() {
         </ul>
       </div>
 
-      {/* Card debug do retorno bruto (útil enquanto integra) */}
-      <details style={{
-        background: '#ffffff',
-        border: '1px solid #e5e5e5',
-        borderRadius: 8,
-        padding: 16
-      }}>
-        <summary style={{ cursor: 'pointer', color: '#0f172a' }}>Ver retorno do servidor (debug)</summary>
-        <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#0f172a' }}>
-{JSON.stringify(resposta, null, 2)}
-        </pre>
-      </details>
-
       <div style={{ marginTop: 16 }}>
         <Link href="/"><button style={{
           background: '#dc2626', color: '#fff',
@@ -122,10 +105,7 @@ export default function Confirmacao() {
         }}>Novo Pedido</button></Link>
       </div>
 
-      {/* mesmo fundo da sua paleta */}
-      <style jsx global>{`
-        body { background: #f5f5f5; }
-      `}</style>
+      <style jsx global>{` body { background: #f5f5f5; } `}</style>
     </main>
   );
 }
