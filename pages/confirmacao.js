@@ -39,7 +39,37 @@ export default function Confirmacao() {
     taxaEntrega: payloadEnviado?.taxaEntrega ?? 0,
     total: payloadEnviado?.total ?? 0,
   };
-  const pedidoId = resposta?.id || resposta?.pedidoId || resposta?.numero || resposta?.raw;
+
+
+
+
+
+
+ // const pedidoId = resposta?.id || resposta?.pedidoId || resposta?.numero || resposta?.raw;
+
+
+// tenta achar o número do pedido em campos comuns do backend
+const extraiNumeroPedido = (r) => {
+  if (!r) return '';
+  const candidatos = [
+    r.numero, r.pedidoNumero, r.pedidoId, r.pedido_id, r.id,
+    r.orderNumber, r.order_id, r.order, r?.data?.numero, r?.data?.id
+  ].filter(Boolean);
+
+  if (!candidatos.length && typeof r?.raw === 'string') {
+    const m = r.raw.match(/\d{3,}/); // pega dígitos se vier em texto
+    if (m) return m[0];
+  }
+  return String(candidatos[0] ?? '').trim();
+};
+
+const pedidoId = extraiNumeroPedido(resposta);
+
+
+
+
+
+
 
   return (
     <main style={{ maxWidth: 760, margin: '24px auto', padding: 16 }}>
@@ -106,6 +136,30 @@ export default function Confirmacao() {
       </div>
 
       <style jsx global>{` body { background: #f5f5f5; } `}</style>
+ 
+
+      {/* Rodapé / Mensagens finais */}
+      <footer style={{ textAlign: 'center', marginTop: 24, color: '#0f172a' }}>
+        <div style={{ marginBottom: 6 }}>
+          Seu pedido foi enviado para o seu WhatsApp
+          {cliente?.telefone ? ` (${cliente.telefone})` : ''}.
+        </div>
+
+        {pedidoId ? (
+          <div style={{ marginBottom: 10 }}>
+            Número do pedido: <strong>{pedidoId}</strong>
+          </div>
+        ) : null}
+
+        <div style={{ whiteSpace: 'pre-wrap', opacity: 0.9 }}>
+          {'Muito Obrigado!!\n© 2025 Luis Gustavo Landucci — Right by LG™'}
+        </div>
+      </footer>
+
+
+
+
+         
     </main>
   );
 }
