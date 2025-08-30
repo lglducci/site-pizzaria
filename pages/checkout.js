@@ -1,4 +1,4 @@
-    // pages/checkout.js
+     // pages/checkout.js
 import { useEffect, useMemo, useState } from 'react';
 import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
 import { isHalfCombo, isHalfPending } from '../lib/pizzaFractions';
@@ -91,19 +91,25 @@ export default function Checkout() {
     return null;
   };
 
-
-
-
-    
  /// const confirmar = () => {
-  
+ const confirmar = async () => {
+    const erro = validar();
+    if (erro) { alert(erro); return; }
 
-
-const confirmar = async () => {
-  const erro = validar();
-  if (erro) { alert(erro); return; }
-
-  const payload = {
+    const cabecalho =
+      `*Novo pedido*\n` +
+      `Nome: ${nome}\n` +
+      `Telefone: ${telefone}\n` +
+      `Endereço: ${ruaNumero}\n` +
+       `Bairro: ${bairro}\n` +
+      `Pagamento: ${pagamento}\n` +
+      (comentarios.trim() ? `Observações: ${comentarios.trim()}\n` : '') +
+      `\n*Itens:*`;
+   // Webhook
+fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedido', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
     cliente: {
       nome,
       telefone,
@@ -112,57 +118,20 @@ const confirmar = async () => {
       pagamento,
       comentarios: (comentarios || '').trim() || null,
     },
-    itens: linhas,
-    subtotal: Number(subtotal),
-    taxaEntrega: DELIVERY_FEE,
-    total: Number(total),
-  };
+    itens: linhas,               // [{ descricao, qtd, preco }]
+    subtotal: Number(subtotal),  // número
+    taxaEntrega: DELIVERY_FEE,   // número
+    total: Number(total),        // número
+  }),
+})
+.then(async (res) => {
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  alert('Pedido enviado com sucesso!');
+})
+.catch((err) => {
+  alert('Erro ao enviar pedido: ' + err.message);
+});
 
-  try {
-    const res = await fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedido', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-
-    // tenta ler como JSON, se não for, salva texto bruto
-    const ct = res.headers.get('content-type') || '';
-    let resposta;
-    try {
-      resposta = ct.includes('application/json')
-        ? await res.json()
-        : { raw: await res.text() };
-    } catch {
-      // fallback defensivo
-      resposta = { raw: await res.text?.() ?? '' };
-    }
-
-    // guarda dados para a próxima página
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem(
-        'pedido_confirmacao',
-        JSON.stringify({
-          resposta,
-          payloadEnviado: payload,
-          timestamp: Date.now(),
-        })
-      );
-      try { localStorage.removeItem('cart'); } catch {}
-    }
-
-    // navega para a página de confirmação
-    router.push('/confirmacao');
-  } catch (err) {
-    alert('Erro ao enviar pedido: ' + err.message);
-  }
-};
-
-
-
-
-     
     const linhasTxt = linhas
       .map(l => `• ${l.qtd}x ${l.descricao} — R$ ${fmt(l.preco)}`)
       .join('\n');
