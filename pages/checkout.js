@@ -111,7 +111,7 @@ fetch('https://primary-production-d79b.up.railway.app/webhook-test/finalizapedid
       nome,
       telefone,
       endereco: `${ruaNumero}`,
-      barrio: `${bairro}`,
+      bairro: `${bairro}`,
       pagamento,
       comentarios: (comentarios || '').trim() || null,
     },
