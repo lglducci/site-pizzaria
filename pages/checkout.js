@@ -51,7 +51,13 @@ export default function Checkout() {
  
   //const isPizza = it => /pizza/i.test(it?.category || it?.name || it?.nome || '');
 // Detectores robustos
- 
+ // === Detectores (use só este bloco) ===
+const BORDA_KEYWORDS = [
+  'borda', 'recheada', 'recheio',
+  'cheddar', 'catupiry', 'catupiri', 'cream cheese', 'requeijão',
+  'chocolate', 'doce de leite', 'nutella', 'goiabada'
+];
+
 const isPizza = (it) => {
   const s = `${it?.category||''} ${it?.name||it?.nome||''}`.toLowerCase();
   return s.includes('pizza') || isHalfCombo(it);
@@ -59,20 +65,26 @@ const isPizza = (it) => {
 
 const isBorda = (it) => {
   const s = `${it?.category||''} ${it?.name||it?.nome||''} ${it?.code||''}`.toLowerCase();
-  // cobre "borda", "borda recheada", nomes de sabores comuns de borda
-  return s.includes('borda') || s.includes('recheada') || s.startsWith('bord') || it?.kind === 'borda';
+  if (it?.kind === 'borda' || it?.border === true || it?.addon === 'borda') return true;
+  if (s.startsWith('bord')) return true;
+  return BORDA_KEYWORDS.some(k => s.includes(k));
 };
 
 const tipo = (it) => {
   const s = `${it?.category||''} ${it?.name||it?.nome||''}`.toLowerCase();
-  const palavrasDoces = [
-    'doce','brigadeiro','prestigio','prestígio','chocolate','banana',
-    'romeu','julieta','goiabada','nutella','churros','leite ninho','ninho'
-  ];
-  return palavrasDoces.some(w => s.includes(w)) ? 'doce' : 'salgada';
+  const doces = ['doce','brigadeiro','prestigio','prestígio','chocolate','banana','romeu','julieta','goiabada','nutella','churros','leite ninho','ninho'];
+  return doces.some(w => s.includes(w)) ? 'doce' : 'salgada';
 };
 
-  
+// listas (deixe logo abaixo dos detectores)
+const pizzas = items.filter(isPizza);
+const bordas = items.filter(isBorda);
+
+// debug rápido (pode remover depois)
+if (typeof window !== 'undefined') {
+  console.log('DEBUG associações => pizzas:', pizzas, 'bordas:', bordas);
+}
+
 
   const pizzas = items.filter(isPizza);
   const bordas = items.filter(isBorda);
