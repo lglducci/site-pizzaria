@@ -404,22 +404,21 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
   );
 })}
 
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 12 }}>
-            <button
-              onClick={() => setCheckoutStep('cart')}
-              style={{ padding: '10px 18px', borderRadius: 8, border: '1px solid #e5e5e5', background: '#fff', cursor: 'pointer' }}
-            >
-              Voltar ao carrinho
-            </button>
-            <button
-              onClick={salvarAssociacaoEFechar}
-              style={{ padding: '10px 18px', borderRadius: 8, border: 0, background: '#dc2626', color: '#fff', cursor: 'pointer' }}
-            >
-              Concluir associação e fechar
-            </button>
-          </div>
-        </div>
-      )}
+
+ const allAssigned = borderUnits.every(u => assocUnits[u.key]);
+...
+<button
+  onClick={salvarAssociacaoEFechar}
+  disabled={!allAssigned}
+  style={{
+    padding: '10px 18px', borderRadius: 8, border: 0,
+    background: allAssigned ? '#dc2626' : '#e5e7eb',
+    color: allAssigned ? '#fff' : '#6b7280',
+    cursor: allAssigned ? 'pointer' : 'not-allowed'
+  }}
+>
+  Concluir associação e fechar
+</button>
 
       {/* TOTAIS */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, color: '#0f172a' }}>
