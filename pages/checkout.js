@@ -72,10 +72,7 @@ const tipo = (it) => {
   return palavrasDoces.some(w => s.includes(w)) ? 'doce' : 'salgada';
 };
 
- 
- 
- 
-  const tipo = it => /\bdoce\b/i.test(String(it?.name || it?.nome || '')) ? 'doce' : 'salgada';
+  
 
   const pizzas = items.filter(isPizza);
   const bordas = items.filter(isBorda);
