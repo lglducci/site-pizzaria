@@ -48,7 +48,10 @@ const bordas = items.filter(isBorda);
 
 
 // Passo atual: 'cart' (carrinho) ou 'assoc' (associação)
-const [step, setStep] = useState('cart');
+//const [step, setStep] = useState('cart');
+const [checkoutStep, setCheckoutStep] = useState('cart');
+
+ 
 // Mapeamento: idDaBorda -> idDaPizza
 const [assoc, setAssoc] = useState({});
 
@@ -145,7 +148,9 @@ const bordas = items.filter(isBorda);
 // Se houver bordas no carrinho, abre o passo de associação; senão, fecha direto
 const continuarCheckout = () => {
   if (bordas.length > 0) { 
-    setStep('assoc'); 
+    //setStep('assoc');
+    setCheckoutStep('assoc') 
+   
     return; 
   }
   confirmar();
@@ -180,7 +185,8 @@ const salvarAssociacaoEFechar = () => {
   }));
 
   // 4) volta ao carrinho e confirma
-  setStep('cart');
+ // setStep('cart');
+   setCheckoutStep('cart')
   setTimeout(() => confirmar(), 0);
 };
 
@@ -338,7 +344,10 @@ const body = { ...payload, mensagem_formatada: mensagemFormatada };
       </div>
 
   {/* COLE AQUI: TELA/PAINEL DE ASSOCIAÇÃO */}
-{step === 'assoc' && (
+//{step === 'assoc' && (
+ 
+{checkoutStep === 'assoc' && ( 
+ 
   <div style={{ background:'#fff', border:'1px solid #e5e5e5', borderRadius:8, padding:16, marginTop:16 }}>
     <h3 style={{ marginTop:0, color:'#0f172a' }}>Associar bordas às pizzas</h3>
 
