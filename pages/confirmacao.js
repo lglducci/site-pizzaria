@@ -155,9 +155,7 @@ const pedidoId = extraiNumeroPedido(resposta);
 
         <div style={{ whiteSpace: 'pre-wrap', opacity: 0.9 }}>
           {'Muito Obrigado!!\n© 2025 Luis Gustavo Landucci — Right by LG™'}
-          <p style={{ marginTop: 8, color: '#0f172a' }}>
-           Entrega para: <strong>{enderecoStr || '—'}</strong>
-         </p>
+          
         </div>
       </footer>
 
