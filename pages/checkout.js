@@ -86,8 +86,7 @@ if (typeof window !== 'undefined') {
 }
 
 
-  const pizzas = items.filter(isPizza);
-  const bordas = items.filter(isBorda);
+  
 
   const subtotal = useMemo(
     () => items.reduce((s, it) => s + toNum(it?.price ?? it?.preco) * (it?.qtd || 1), 0),
