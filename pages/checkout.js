@@ -1,7 +1,7 @@
  // pages/checkout.js
 import { useEffect, useMemo, useState } from 'react';
 import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
-import { isHalfCombo, isHalfPending } from '../lib/pizzaFractions';    
+import { isHalfCombo, isHalfPending } from '../lib/pizzaFractions';
 import { isBorderCombo, ensureNoPendingBorders } from '../lib/borderAddon';
 
 // >>> CONFIGURE <<<

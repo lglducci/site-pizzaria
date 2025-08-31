@@ -1,11 +1,12 @@
   // pages/index.js
 import { useMemo, useState } from 'react';
-import { CartProvider, useCart } from '../context/CartContext';
+import { useCart } from '../context/CartContext';
 import MenuItemCard from '../components/MenuItemCard';
-import CartDrawer from '../components/CartDrawer';
 
+// endpoint do cardápio
 const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico';
 
+// helpers
 function toNumber(x) {
   if (typeof x === 'number' && isFinite(x)) return x;
   if (x == null) return 0;
@@ -27,6 +28,7 @@ function pickArray(x) {
   return [x];
 }
 
+// SSR: busca o cardápio
 export async function getServerSideProps() {
   try {
     const r = await fetch(UPSTREAM, { headers: { accept: 'application/json' } });
@@ -38,17 +40,18 @@ export async function getServerSideProps() {
       const nome = v?.nome ?? v?.descricao ?? `Item ${i + 1}`;
       const categoria = String(v?.categoria ?? v?.tipo ?? 'OUTROS').toUpperCase();
       const imagem = v?.imagem || v?.imagem_url || '';
-
       const precoBase = v?.preco ?? v?.valor ?? v?.preco_venda ?? v?.precoUnitario ?? v?.price;
+
       return {
         id: v?.id ?? v?.numero ?? i + 1,
+        numero: v?.numero ?? v?.id ?? i + 1,
         nome,
+        descricao: v?.descricao ?? '',
+        categoria,
+        imagem,
         preco: toNumber(precoBase),
         preco_medio: toNumber(v?.preco_medio),
         preco_grande: toNumber(v?.preco_grande),
-        categoria,
-        descricao: v?.descricao ?? '',
-        imagem,
       };
     });
     return { props: { menu } };
@@ -59,7 +62,6 @@ export async function getServerSideProps() {
 
 function HomeInner({ menu, error }) {
   const [cat, setCat] = useState('TODOS');
-  const [drawer, setDrawer] = useState(false);
   const { total } = useCart();
 
   const cats = useMemo(() => {
@@ -70,34 +72,50 @@ function HomeInner({ menu, error }) {
   const list = useMemo(() => (cat === 'TODOS' ? menu : menu.filter((m) => m.categoria === cat)), [menu, cat]);
 
   return (
-    <main>
-      <div className="header">
-        <strong style={{ fontSize: 32 }}><div className="title">🍕 Cardápio</div></strong>
-        <div className="badge">Itens: {menu.length}</div>
+    <main style={{ padding: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div style={{ fontSize: 28 }}>🍕 Cardápio</div>
+        <span style={{ background: '#eee', padding: '2px 8px', borderRadius: 999 }}>
+          Itens: {menu.length}
+        </span>
+        <span style={{ marginLeft: 'auto' }}>🛒 R$ {Number(total ?? 0).toFixed(2)}</span>
       </div>
 
-      {error && <div className="alert">{error}</div>}
+      {error ? (
+        <div style={{ background: '#fee2e2', color: '#991b1b', padding: 10, borderRadius: 8, marginBottom: 12 }}>
+          {error}
+        </div>
+      ) : null}
 
-      <div className="toolbar">
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
         {cats.map((c) => (
-          <button key={c} className={`chip ${cat === c ? 'active' : ''}`} onClick={() => setCat(c)}>{c}</button>
+          <button
+            key={c}
+            className={`chip ${cat === c ? 'active' : ''}`}
+            onClick={() => setCat(c)}
+            style={{
+              padding: '6px 10px',
+              borderRadius: 999,
+              border: '1px solid #ddd',
+              background: cat === c ? '#111' : '#fff',
+              color: cat === c ? '#fff' : '#111',
+              cursor: 'pointer',
+            }}
+          >
+            {c}
+          </button>
         ))}
       </div>
 
-      <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
-        {list.map((item) => <MenuItemCard key={item.id} item={item} />)}
+      <div className="grid" style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+        {list.map((item) => (
+          <MenuItemCard key={item.id} item={item} />
+        ))}
       </div>
-
-      <button className="fab" onClick={() => setDrawer(true)}>🛒 R$ {Number(total ?? 0).toFixed(2)}</button>
-      <CartDrawer open={drawer} onClose={() => setDrawer(false)} />
     </main>
   );
 }
 
 export default function Home(props) {
-  return (
-    <CartProvider>
-      <HomeInner {...props} />
-    </CartProvider>
-  );
+  return <HomeInner {...props} />;
 }
