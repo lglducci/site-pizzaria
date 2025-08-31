@@ -289,9 +289,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
     };
 
     try {
-      const res = await fetch(
-        'https://primary-production-d79b.up.railway.app/webhook/finalizapedido',
-        {
+      const res = await fetch('/api/finalizapedido', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
