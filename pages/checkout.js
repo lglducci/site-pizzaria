@@ -448,7 +448,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 padding: '10px 0',
-                borderBottom: '1px solid '#e5e5e5',
+                borderBottom: '1px solid #e5e5e5',
               }}
             >
               <div style={{ maxWidth: '70%', fontWeight: 700, color: '#0f172a' }}>
