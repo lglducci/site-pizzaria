@@ -262,34 +262,45 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
     confirmar();
   };
 
-  const salvarAssociacaoEFechar = () => {
-    // 1) cada borda precisa de uma pizza escolhida
-    const pendentes = bordas.filter(b => !assoc[b.id]);
-    if (pendentes.length) { alert('Selecione uma pizza para cada borda.'); return; }
 
-    // 2) valida compatibilidade (doce/salgada)
-    for (const b of bordas) {
-      const pid = assoc[b.id];
-      const p = pizzas.find(x => x.id === pid);
-      if (!p) continue;
-      if (tipo(p) !== tipo(b)) {
-        alert(`Borda “${b.name || b.nome}” incompatível com a pizza escolhida (doce/salgada).`);
-        return;
-      }
+ 
+
+ const salvarAssociacaoEFechar = () => {
+  // 1) todas as unidades precisam estar associadas
+  const pend = borderUnits.filter(u => !assocUnits[u.key]);
+  if (pend.length) { alert('Associe TODAS as bordas às pizzas.'); return; }
+
+  // 2) valida compatibilidade doce/salgada
+  for (const u of borderUnits) {
+    const b = u.item;
+    const pid = assocUnits[u.key];
+    const p = pizzas.find(x => x.id === pid);
+    if (p && tipo(p) !== tipo(b)) {
+      alert(`Borda “${b.name || b.nome}” incompatível com a pizza escolhida (doce/salgada).`);
+      return;
     }
+  }
 
-    // 3) grava o vínculo nos itens (linkedTo)
-    setItems(prev => prev.map(it => {
-      if (/borda/i.test(it?.category || it?.name || it?.nome || '')) {
-        return { ...it, linkedTo: assoc[it.id] || null };
-      }
-      return it;
-    }));
+  // 3) monta { itemId -> [pizzaIds...] } na ordem das unidades
+  const byItem = {};
+  for (const u of borderUnits) {
+    const pid = assocUnits[u.key];
+    (byItem[u.itemId] ||= []).push(pid);
+  }
 
-    // 4) volta ao carrinho e confirma
-    setCheckoutStep('cart');
-    setTimeout(() => confirmar(), 0);
-  };
+  // 4) grava nos itens: se qtd>1 usa linkedToList; se qtd=1 usa linkedTo
+  setItems(prev => prev.map(it => {
+    if (!isBorda(it)) return it;
+    const list = byItem[it.id] || [];
+    const q = it?.qtd || 1;
+    if (q > 1) return { ...it, linkedToList: list, linkedTo: undefined };
+    return { ...it, linkedTo: list[0] || null, linkedToList: undefined };
+  }));
+
+  setCheckoutStep('cart');
+  setTimeout(() => confirmar(), 0);
+};
+
 
   return (
     <main className="container" style={{ maxWidth: 760, margin: '24px auto' }}>
