@@ -51,57 +51,74 @@ export default function Checkout() {
  
   //const isPizza = it => /pizza/i.test(it?.category || it?.name || it?.nome || '');
 // Detectores robustos
+ 
+// === Detectores (categoria 1º, com fallback por nome) ===
+const norm = (s) => String(s||'')
+  .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase().trim();
 
-// === Detectores por categoria (use só este bloco) ===
-const catOf = (it) => String(it?.category || it?.categoria || it?.cat || '').toLowerCase().trim();
+const catOf = (it) => norm(it?.category || it?.categoria || it?.cat);
 
-// Quais categorias tratamos como PIZZA
+// categorias tratadas como PIZZA
 const PIZZA_CATS = [
-  'pizza', 'pizzas', 'pizza salgada', 'pizza doce',
-  'salgada', 'doce' // muitas bases usam só isso
+  'pizza','pizzas','pizza salgada','pizza doce','salgada','doces','doce'
 ];
 
-// Quais categorias tratamos como BORDA
+// categorias tratadas como BORDA
 const BORDA_CATS = [
-  'borda', 'bordas', 'borda recheada', 'recheio', 'recheio de borda'
+  'borda','bordas','borda recheada','recheio','recheio de borda','recheios'
 ];
 
-const isPizza = (it) => {
-  const c = catOf(it);
-  if (!c) return false;
-  // pizza se a categoria contém alguma das palavras acima
-  return PIZZA_CATS.some(k => c.includes(k));
-};
+// palavras que indicam Borda no NOME (fallback)
+const BORDA_NAME = [
+  'borda','recheada','recheio','cheddar','catupiry','catupiri','cream cheese','requeijao','requeijão',
+  'chocolate','doce de leite','nutella','goiabada'
+].map(norm);
+
+// palavras que NÃO são pizza (bebidas etc.)
+const NOT_PIZZA = [
+  'agua','água','refrigerante','refri','cerveja','coca','skol','bohemia',
+  'sprite','fanta','guarana','guaraná','suco','600ml','2l','lata','garrafa'
+];
 
 const isBorda = (it) => {
   const c = catOf(it);
-  if (!c) return false;
-  // borda se a categoria contém alguma das palavras acima
-  return BORDA_CATS.some(k => c.includes(k));
+  if (c && BORDA_CATS.some(k => c.includes(k))) return true;
+  const n = norm(`${it?.name || it?.nome || ''} ${it?.code || ''}`);
+  return BORDA_NAME.some(k => n.includes(k));
 };
 
-// tipo da pizza/borda (para validação doce/salgada)
+const isPizza = (it) => {
+  const c = catOf(it);
+  if (c && PIZZA_CATS.some(k => c.includes(k))) return true;
+  // fallback por nome/forma
+  const n = norm(`${it?.name || it?.nome || ''}`);
+  if (isBorda(it)) return false;
+  if (NOT_PIZZA.some(k => n.includes(k))) return false;
+  const hasSize = /\((g|m|p)\)/i.test(it?.name || it?.nome || '');
+  const isHalf = /\bmeia\b/.test(n);
+  return n.includes('pizza') || hasSize || isHalf;
+};
+
+// tipo (doces/salgadas) — usa categoria primeiro
 const tipo = (it) => {
   const c = catOf(it);
-  if (/doce/.test(c)) return 'doce';
+  if (/doc(e|es)/.test(c)) return 'doce';
   if (/salgad/.test(c)) return 'salgada';
-  // fallback leve: olha o nome se a categoria não indicar
-  const s = `${it?.name || it?.nome || ''}`.toLowerCase();
-  const doces = ['doce','brigadeiro','prestigio','prestígio','chocolate','banana','romeu','julieta','goiabada','nutella','churros','leite ninho','ninho'];
-  return doces.some(w => s.includes(w)) ? 'doce' : 'salgada';
+  const n = norm(`${it?.name || it?.nome || ''}`);
+  const doces = ['doce','brigadeiro','prestigio','prestigio','chocolate','banana','romeu','julieta','goiabada','nutella','churros','leite ninho','ninho'];
+  return doces.some(w => n.includes(w)) ? 'doce' : 'salgada';
 };
 
-
-  
-// listas (deixe logo abaixo dos detectores)
+// listas (APENAS UMA VEZ!)
 const pizzas = items.filter(isPizza);
 const bordas = items.filter(isBorda);
 
-// debug rápido (pode remover depois)
+// debug: veja as categorias que estão vindo
 if (typeof window !== 'undefined') {
-  console.log('DEBUG associações => pizzas:', pizzas, 'bordas:', bordas);
+  const cats = Array.from(new Set(items.map(it => catOf(it))));
+  console.log('CATEGORIAS:', cats, 'pizzas:', pizzas, 'bordas:', bordas);
 }
-
 
   
 
