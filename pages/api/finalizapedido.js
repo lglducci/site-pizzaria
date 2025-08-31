@@ -1,0 +1,29 @@
+// pages/api/finalizapedido.js
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST');
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const upstream = await fetch(
+      'https://primary-production-d79b.up.railway.app/webhook/finalizapedido',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // repassa o corpo que veio do cliente
+        body: JSON.stringify(req.body),
+      }
+    );
+
+    const contentType = upstream.headers.get('content-type') || 'text/plain';
+    const text = await upstream.text();
+
+    res.status(upstream.status);
+    res.setHeader('content-type', contentType);
+    return res.send(text);
+  } catch (e) {
+    // erro de rede/DNS/TLS/etc
+    return res.status(502).json({ error: 'Upstream error', detail: String(e?.message || e) });
+  }
+}
