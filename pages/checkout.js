@@ -100,6 +100,30 @@ export default function Checkout() {
       total: Number(total),
     };
 
+
+     // --- MENSAGEM FORMATADA (com endereço) ---
+const enderecoLinha = `${ruaNumero}${bairro ? ' - ' + bairro : ''}`;
+const linhasFmt = linhas
+  .map(l => `       ${l.qtd}x ${l.descricao} - R$ ${fmt(l.preco)}`)
+  .join('\n');
+
+const mensagemFormatada =
+`Pedido nº 
+Entrega para: ${enderecoLinha}
+Resumo:
+${linhasFmt}
+Forma de pagamento: ${pagamento || '-'}
+Entrega: R$ ${fmt(DELIVERY_FEE)}
+Total: R$ ${fmt(total)}
+${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
+
+// objeto final que vai pro webhook (payload + mensagem_formatada)
+const body = { ...payload, mensagem_formatada: mensagemFormatada };
+
+
+
+
+   
     try {
       const res = await fetch('https://primary-production-d79b.up.railway.app/webhook/finalizapedido', {
         method: 'POST',
