@@ -378,7 +378,7 @@ const body = { ...payload, mensagem_formatada: mensagemFormatada };
     )}
 
     <div style={{ display:'flex', gap:8, justifyContent:'flex-end', marginTop:12 }}>
-      <button onClick={()=>setStep('cart')}
+      <button  onClick={() => setCheckoutStep('cart')}
         style={{ padding:'10px 18px', borderRadius:8, border:'1px solid #e5e5e5', background:'#fff', cursor:'pointer' }}>
         Voltar ao carrinho
       </button>
