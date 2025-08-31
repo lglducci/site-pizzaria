@@ -31,6 +31,44 @@ export default function Checkout() {
   const [bairro, setBairro] = useState('');
   const [pagamento, setPagamento] = useState('');
   const [comentarios, setComentarios] = useState('');
+// Passo atual do fluxo: 'cart' (carrinho) ou 'assoc' (associar bordas↔pizzas)
+const [step, setStep] = useState('cart');
+
+// Mapa: idDaBorda -> idDaPizza
+const [assoc, setAssoc] = useState({});
+
+// Detectores simples (ajuste se você já tem esses campos)
+const isPizza = it => /pizza/i.test(it?.category || it?.name || it?.nome || '');
+const isBorda = it => /borda/i.test(it?.category || it?.name || it?.nome || '');
+// Regra doce/salgada (ajuste se você marca isso em outro campo)
+const tipo = it => /\bdoce\b/i.test(String(it?.name || it?.nome || '')) ? 'doce' : 'salgada';
+
+const pizzas = items.filter(isPizza);
+const bordas = items.filter(isBorda);
+
+
+// Passo atual: 'cart' (carrinho) ou 'assoc' (associação)
+const [step, setStep] = useState('cart');
+// Mapeamento: idDaBorda -> idDaPizza
+const [assoc, setAssoc] = useState({});
+
+// Detecção simples
+const isPizza = it => /pizza/i.test(it?.category || it?.name || it?.nome || '');
+const isBorda = it => /borda/i.test(it?.category || it?.name || it?.nome || '');
+// Regras doce/salgada (ajuste os critérios se quiser)
+const tipo = it => /\bdoce\b/i.test(String(it?.name || it?.nome || '')) ? 'doce' : 'salgada';
+
+const pizzas = items.filter(isPizza);
+const bordas = items.filter(isBorda);
+
+
+
+
+
+
+
+
+ 
 
   // --------- CART ---------
   const [items, setItems] = useState([]);
@@ -73,6 +111,8 @@ export default function Checkout() {
     if (!pagamento.trim()) return 'Escolha a forma de pagamento.';
     try {
       ensureNoPendingFractions(items);
+      ensureNoPendingBorders(items);
+     
     } catch (e) {
       return e.message || 'Há meias pizzas pendentes. Complete as frações.';
     }
@@ -99,6 +139,54 @@ export default function Checkout() {
       taxaEntrega: DELIVERY_FEE,
       total: Number(total),
     };
+
+// === FLUXO: Carrinho → Associação → Fechar ===
+
+// Se houver bordas no carrinho, abre o passo de associação; senão, fecha direto
+const continuarCheckout = () => {
+  if (bordas.length > 0) { 
+    setStep('assoc'); 
+    return; 
+  }
+  confirmar();
+};
+
+// Aplica as associações (borda -> pizza) e fecha o pedido
+const salvarAssociacaoEFechar = () => {
+  // 1) cada borda precisa de uma pizza escolhida
+  const pendentes = bordas.filter(b => !assoc[b.id]);
+  if (pendentes.length) { 
+    alert('Selecione uma pizza para cada borda.'); 
+    return; 
+  }
+
+  // 2) valida compatibilidade (doce/salgada)
+  for (const b of bordas) {
+    const pid = assoc[b.id];
+    const p = pizzas.find(x => x.id === pid);
+    if (!p) continue;
+    if (tipo(p) !== tipo(b)) {
+      alert(`Borda “${b.name || b.nome}” incompatível com a pizza escolhida (doce/salgada).`);
+      return;
+    }
+  }
+
+  // 3) grava o vínculo nos itens (linkedTo)
+  setItems(prev => prev.map(it => {
+    if (/borda/i.test(it?.category || it?.name || it?.nome || '')) {
+      return { ...it, linkedTo: assoc[it.id] || null };
+    }
+    return it;
+  }));
+
+  // 4) volta ao carrinho e confirma
+  setStep('cart');
+  setTimeout(() => confirmar(), 0);
+};
+
+
+
+   
 
 
      // --- MENSAGEM FORMATADA (com endereço) ---
@@ -270,7 +358,7 @@ const body = { ...payload, mensagem_formatada: mensagemFormatada };
       <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
         <button
           className="btn primary"
-          onClick={confirmar}
+           onClick={continuarCheckout}
           style={{
             background: '#dc2626', color: '#fff',
             padding: '10px 18px', border: 0, borderRadius: 8, cursor: 'pointer'
