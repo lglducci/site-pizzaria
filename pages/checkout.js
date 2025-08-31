@@ -375,30 +375,34 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
             <div style={{ color: '#0f172a' }}>Não há bordas no carrinho.</div>
           ) : (
             <div style={{ display: 'grid', gap: 12 }}>
-              {bordas.map(b => (
-                <div key={b.id} style={{ border: '1px solid #e5e5e5', borderRadius: 8, padding: 12 }}>
-                  <div style={{ fontWeight: 600, marginBottom: 6, color: '#0f172a' }}>
-                    {(b.qtd || 1)}x {b.name || b.nome} — {tipo(b)}
-                  </div>
-                  <select
-                    value={assoc[b.id] || ''}
-                    onChange={(e) => setAssoc(prev => ({ ...prev, [b.id]: e.target.value }))}
-                    style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e5e5' }}
-                  >
-                    <option value="" disabled>Selecione uma pizza compatível…</option>
-                    {pizzas
-                      .filter(p => tipo(p) === tipo(b))
-                      .map(p => (
-                        <option key={p.id} value={p.id}>
-                          {(p.qtd || 1)}x {p.name || p.nome}
-                        </option>
-                      ))
-                    }
-                  </select>
-                </div>
-              ))}
-            </div>
-          )}
+
+ {borderUnits.map(u => {
+  const b = u.item;
+  const opts = pizzas.filter(p => tipo(p) === tipo(b)); // doce↔doce, salgada↔salgada
+  return (
+    <div key={u.key} style={{ border: '1px solid #e5e5e5', borderRadius: 8, padding: 12 }}>
+      <div style={{ fontWeight: 600, marginBottom: 6, color: '#0f172a' }}>
+        Borda {u.idx}/{b.qtd || 1}: {b.name || b.nome} — {tipo(b)}
+      </div>
+      {opts.length ? (
+        <select
+          value={assocUnits[u.key] || ''}
+          onChange={(e) => setAssocUnits(prev => ({ ...prev, [u.key]: e.target.value }))}
+          style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e5e5' }}
+        >
+          <option value="" disabled>Selecione uma pizza compatível…</option>
+          {opts.map(p => (
+            <option key={p.id} value={p.id}>
+              {(p.qtd || 1)}x {p.name || p.nome}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <div style={{ color: '#b91c1c' }}>Nenhuma pizza compatível encontrada.</div>
+      )}
+    </div>
+  );
+})}
 
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 12 }}>
             <button
