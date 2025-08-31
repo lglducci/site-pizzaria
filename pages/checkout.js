@@ -47,8 +47,33 @@ export default function Checkout() {
   const [assoc, setAssoc] = useState({});
 
   // Detectores simples (adapte se você já marca isso nos itens)
-  const isPizza = it => /pizza/i.test(it?.category || it?.name || it?.nome || '');
-  const isBorda = it => /borda/i.test(it?.category || it?.name || it?.nome || '');
+
+ 
+  //const isPizza = it => /pizza/i.test(it?.category || it?.name || it?.nome || '');
+// Detectores robustos
+const isPizza = (it) => {
+  const s = `${it?.category||''} ${it?.name||it?.nome||''}`.toLowerCase();
+  return s.includes('pizza') || isHalfCombo(it);
+};
+
+const isBorda = (it) => {
+  const s = `${it?.category||''} ${it?.name||it?.nome||''} ${it?.code||''}`.toLowerCase();
+  // cobre "borda", "borda recheada", nomes de sabores comuns de borda
+  return s.includes('borda') || s.includes('recheada') || s.startsWith('bord') || it?.kind === 'borda';
+};
+
+const tipo = (it) => {
+  const s = `${it?.category||''} ${it?.name||it?.nome||''}`.toLowerCase();
+  const palavrasDoces = [
+    'doce','brigadeiro','prestigio','prestígio','chocolate','banana',
+    'romeu','julieta','goiabada','nutella','churros','leite ninho','ninho'
+  ];
+  return palavrasDoces.some(w => s.includes(w)) ? 'doce' : 'salgada';
+};
+
+ 
+ 
+ const isBorda = it => /borda/i.test(it?.category || it?.name || it?.nome || '');
   const tipo = it => /\bdoce\b/i.test(String(it?.name || it?.nome || '')) ? 'doce' : 'salgada';
 
   const pizzas = items.filter(isPizza);
