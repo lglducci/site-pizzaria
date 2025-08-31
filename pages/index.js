@@ -1,9 +1,10 @@
  // pages/index.js
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CartProvider, useCart } from '../context/CartContext';
 import MenuItemCard from '../components/MenuItemCard';
 import CartDrawer from '../components/CartDrawer';
-import { addToCart, migrateCartCategories } from '../lib/cart';
+import { addToCart, migrateCartCategories, normalizeCategory } from '../lib/cart';
+
 const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico';
 
 function toNumber(x) {
@@ -34,23 +35,31 @@ export async function getServerSideProps() {
     if (!r.ok) throw new Error(`Upstream ${r.status}: ${text}`);
     let data; try { data = JSON.parse(text); } catch { throw new Error('JSON inválido do upstream'); }
     const arr = pickArray(data);
+
     const menu = arr.map((v, i) => {
       const nome = v?.nome ?? v?.descricao ?? `Item ${i + 1}`;
-      const categoria = String(v?.categoria ?? v?.tipo ?? 'OUTROS').toUpperCase();
-      const imagem = v?.imagem || v?.imagem_url || '';
 
+      // origem pode ser "categoria" ou "tipo" no seu backend
+      const categoriaRaw = v?.categoria ?? v?.tipo ?? 'OUTROS';
+      const categoria = String(categoriaRaw).toUpperCase();         // ex.: "PIZZA", "BORDA", "BEBIDA"
+      const category  = normalizeCategory(categoriaRaw);             // ex.: "pizza", "borda", "bebida"
+
+      const imagem = v?.imagem || v?.imagem_url || '';
       const precoBase = v?.preco ?? v?.valor ?? v?.preco_venda ?? v?.precoUnitario ?? v?.price;
+
       return {
         id: v?.id ?? v?.numero ?? i + 1,
         nome,
         preco: toNumber(precoBase),
         preco_medio: toNumber(v?.preco_medio),
         preco_grande: toNumber(v?.preco_grande),
-        categoria,
+        categoria,                // visível nos filtros
+        category,                 // normalizado (vai junto pro carrinho)
         descricao: v?.descricao ?? '',
         imagem,
       };
     });
+
     return { props: { menu } };
   } catch (e) {
     return { props: { menu: [], error: String(e) } };
@@ -62,17 +71,32 @@ function HomeInner({ menu, error }) {
   const [drawer, setDrawer] = useState(false);
   const { total } = useCart();
 
+  // migra carrinhos antigos (sem category) assim que a página carrega
+  useEffect(() => { try { migrateCartCategories(); } catch {} }, []);
+
   const cats = useMemo(() => {
     const set = new Set(menu.map((m) => m.categoria));
     return ['TODOS', ...Array.from(set)];
   }, [menu]);
 
-  const list = useMemo(() => (cat === 'TODOS' ? menu : menu.filter((m) => m.categoria === cat)), [menu, cat]);
+  const list = useMemo(
+    () => (cat === 'TODOS' ? menu : menu.filter((m) => m.categoria === cat)),
+    [menu, cat]
+  );
+
+  // Adicionar ao carrinho garantindo category/categoria
+  const handleAdd = (item) => {
+    // força category a ir junto; se já vier, mantém
+    addToCart(item, { category: item.category || item.categoria });
+    setDrawer(true); // abre o carrinho para o cliente ver
+  };
 
   return (
     <main>
       <div className="header">
-        <strong style={{ fontSize: 32 }}><div className="title">🍕 Cardápio</div></strong>
+        <strong style={{ fontSize: 32 }}>
+          <div className="title">🍕 Cardápio</div>
+        </strong>
         <div className="badge">Itens: {menu.length}</div>
       </div>
 
@@ -80,15 +104,32 @@ function HomeInner({ menu, error }) {
 
       <div className="toolbar">
         {cats.map((c) => (
-          <button key={c} className={`chip ${cat === c ? 'active' : ''}`} onClick={() => setCat(c)}>{c}</button>
+          <button
+            key={c}
+            className={`chip ${cat === c ? 'active' : ''}`}
+            onClick={() => setCat(c)}
+          >
+            {c}
+          </button>
         ))}
       </div>
 
-      <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
-        {list.map((item) => <MenuItemCard key={item.id} item={item} />)}
+      <div
+        className="grid"
+        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}
+      >
+        {list.map((item) => (
+          <MenuItemCard
+            key={item.id}
+            item={item}
+            onAdd={() => handleAdd(item)}  // <— usa o helper aqui
+          />
+        ))}
       </div>
 
-      <button className="fab" onClick={() => setDrawer(true)}>🛒 R$ {Number(total ?? 0).toFixed(2)}</button>
+      <button className="fab" onClick={() => setDrawer(true)}>
+        🛒 R$ {Number(total ?? 0).toFixed(2)}
+      </button>
       <CartDrawer open={drawer} onClose={() => setDrawer(false)} />
     </main>
   );
@@ -101,4 +142,3 @@ export default function Home(props) {
     </CartProvider>
   );
 }
-
