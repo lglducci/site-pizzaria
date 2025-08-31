@@ -164,22 +164,57 @@ if (typeof window !== 'undefined') {
     }));
   }, [items]);
 
+ 
   // validações
-  const validar = () => {
-    if (!nome.trim()) return 'Informe seu nome.';
-    if (!telefone.trim()) return 'Informe seu telefone.';
-    if (!ruaNumero.trim()) return 'Informe rua e número.';
-    if (!bairro.trim()) return 'Informe o bairro.';
-    if (!pagamento.trim()) return 'Escolha a forma de pagamento.';
-    if (!items.length) return 'Seu carrinho está vazio.';
-    try {
-      ensureNoPendingFractions(items);
-      ensureNoPendingBorders(items); // trava borda solta/incompatível se sua lib validar isso
-    } catch (e) {
-      return e.message || 'Há bordas pendentes. Associe cada borda a uma pizza compatível.';
+  // validações
+const validar = () => {
+  // campos obrigatórios
+  if (!nome.trim()) return 'Informe seu nome.';
+  if (!telefone.trim()) return 'Informe seu telefone.';
+  if (!ruaNumero.trim()) return 'Informe rua e número.';
+  if (!bairro.trim()) return 'Informe o bairro.';
+  if (!pagamento.trim()) return 'Escolha a forma de pagamento.';
+  if (!items.length) return 'Seu carrinho está vazio.';
+
+  // valida frações (meias)
+  try {
+    ensureNoPendingFractions(items);
+  } catch (e) {
+    return e.message || 'Há meias pizzas pendentes. Complete as frações.';
+  }
+
+  // --- REGRAS DE BORDA (por unidade) ---
+  const pizzasLocal = items.filter(isPizza);
+  const bordasLocal = items.filter(isBorda);
+
+  // se há borda, precisa haver pizza
+  if (bordasLocal.length && !pizzasLocal.length) {
+    return 'Há borda no carrinho, mas nenhuma pizza.';
+  }
+
+  // cada borda precisa estar associada, e ser compatível (doce/salgada)
+  for (const b of bordasLocal) {
+    const q = b?.qtd || 1;
+    const links = q > 1 ? b?.linkedToList : (b?.linkedTo ? [b.linkedTo] : []);
+
+    // pendência de associação
+    if (!Array.isArray(links) || links.length !== q || links.some(v => !v)) {
+      return 'Há bordas pendentes. Associe cada borda a uma pizza.';
     }
-    return null;
-  };
+
+    // compatibilidade doce/salgada e existência da pizza
+    for (const pid of links) {
+      const p = items.find(x => x.id === pid);
+      if (!p) return 'Há bordas pendentes. Associe cada borda a uma pizza válida.';
+      if (tipo(p) !== tipo(b)) {
+        return `Borda “${b.name || b.nome}” (${tipo(b)}) incompatível com a pizza escolhida (${tipo(p)}).`;
+      }
+    }
+  }
+
+  return null;
+};
+
 
   // >>>>>>>>>> CONFIRMAR (aguarda webhook, guarda retorno e redireciona) <<<<<<<<<<
   const confirmar = async () => {
