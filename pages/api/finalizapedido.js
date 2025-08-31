@@ -1,5 +1,4 @@
-// pages/api/finalizapedido.js
-export default async function handler(req, res) {
+ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed' });
@@ -11,7 +10,6 @@ export default async function handler(req, res) {
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // repassa o corpo que veio do cliente
         body: JSON.stringify(req.body),
       }
     );
@@ -23,7 +21,6 @@ export default async function handler(req, res) {
     res.setHeader('content-type', contentType);
     return res.send(text);
   } catch (e) {
-    // erro de rede/DNS/TLS/etc
     return res.status(502).json({ error: 'Upstream error', detail: String(e?.message || e) });
   }
 }
