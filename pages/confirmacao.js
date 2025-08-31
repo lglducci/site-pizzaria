@@ -34,6 +34,8 @@ export default function Confirmacao() {
 
   const { resposta, payloadEnviado, timestamp } = data;
   const cliente = payloadEnviado?.cliente || {};
+ const enderecoStr = [cliente?.endereco, cliente?.bairro].filter(Boolean).join(' — ');
+
   const valores = {
     subtotal: payloadEnviado?.subtotal ?? 0,
     taxaEntrega: payloadEnviado?.taxaEntrega ?? 0,
@@ -153,6 +155,9 @@ const pedidoId = extraiNumeroPedido(resposta);
 
         <div style={{ whiteSpace: 'pre-wrap', opacity: 0.9 }}>
           {'Muito Obrigado!!\n© 2025 Luis Gustavo Landucci — Right by LG™'}
+          <p style={{ marginTop: 8, color: '#0f172a' }}>
+           Entrega para: <strong>{enderecoStr || '—'}</strong>
+         </p>
         </div>
       </footer>
 
