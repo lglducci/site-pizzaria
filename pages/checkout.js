@@ -32,7 +32,7 @@ export default function Checkout() {
   const [pagamento, setPagamento] = useState('');
   const [comentarios, setComentarios] = useState('');
 // Passo atual do fluxo: 'cart' (carrinho) ou 'assoc' (associar bordas↔pizzas)
-const [step, setStep] = useState('cart');
+ 
 
 // Mapa: idDaBorda -> idDaPizza
 const [assoc, setAssoc] = useState({});
