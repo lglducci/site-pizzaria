@@ -337,6 +337,56 @@ const body = { ...payload, mensagem_formatada: mensagemFormatada };
         </div>
       </div>
 
+  {/* COLE AQUI: TELA/PAINEL DE ASSOCIAÇÃO */}
+{step === 'assoc' && (
+  <div style={{ background:'#fff', border:'1px solid #e5e5e5', borderRadius:8, padding:16, marginTop:16 }}>
+    <h3 style={{ marginTop:0, color:'#0f172a' }}>Associar bordas às pizzas</h3>
+
+    {bordas.length === 0 ? (
+      <div style={{ color:'#0f172a' }}>Não há bordas no carrinho.</div>
+    ) : (
+      <div style={{ display:'grid', gap:12 }}>
+        {bordas.map(b => (
+          <div key={b.id} style={{ border:'1px solid #e5e5e5', borderRadius:8, padding:12 }}>
+            <div style={{ fontWeight:600, marginBottom:6, color:'#0f172a' }}>
+              {(b.qtd || 1)}x {b.name || b.nome}
+            </div>
+            <select
+              value={assoc[b.id] || ''}
+              onChange={(e)=>setAssoc(prev => ({ ...prev, [b.id]: e.target.value }))}
+              style={{ width:'100%', padding:10, borderRadius:8, border:'1px solid #e5e5e5' }}
+            >
+              <option value="" disabled>Selecione uma pizza compatível…</option>
+              {pizzas.map(p => (
+                <option key={p.id} value={p.id}>
+                  {(p.qtd || 1)}x {p.name || p.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <div style={{ display:'flex', gap:8, justifyContent:'flex-end', marginTop:12 }}>
+      <button onClick={()=>setStep('cart')}
+        style={{ padding:'10px 18px', borderRadius:8, border:'1px solid #e5e5e5', background:'#fff', cursor:'pointer' }}>
+        Voltar ao carrinho
+      </button>
+      <button onClick={salvarAssociacaoEFechar}
+        style={{ padding:'10px 18px', borderRadius:8, border:0, background:'#dc2626', color:'#fff', cursor:'pointer' }}>
+        Concluir associação e fechar
+      </button>
+    </div>
+  </div>
+)}
+
+{/* TOTAIS (deixe como já está) */}
+<div>Subtotal</div>
+
+
+
+
       {/* RESUMO */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, color: '#0f172a' }}>
         <div>Subtotal</div>
