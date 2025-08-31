@@ -128,7 +128,8 @@ const body = { ...payload, mensagem_formatada: mensagemFormatada };
       const res = await fetch('https://primary-production-d79b.up.railway.app/webhook/finalizapedido', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+       body: JSON.stringify(body),
+       //body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error('HTTP ' + res.status);
 
