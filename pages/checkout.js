@@ -51,31 +51,48 @@ export default function Checkout() {
  
   //const isPizza = it => /pizza/i.test(it?.category || it?.name || it?.nome || '');
 // Detectores robustos
- // === Detectores (use só este bloco) ===
-const BORDA_KEYWORDS = [
-  'borda', 'recheada', 'recheio',
-  'cheddar', 'catupiry', 'catupiri', 'cream cheese', 'requeijão',
-  'chocolate', 'doce de leite', 'nutella', 'goiabada'
+
+// === Detectores por categoria (use só este bloco) ===
+const catOf = (it) => String(it?.category || it?.categoria || it?.cat || '').toLowerCase().trim();
+
+// Quais categorias tratamos como PIZZA
+const PIZZA_CATS = [
+  'pizza', 'pizzas', 'pizza salgada', 'pizza doce',
+  'salgada', 'doce' // muitas bases usam só isso
+];
+
+// Quais categorias tratamos como BORDA
+const BORDA_CATS = [
+  'borda', 'bordas', 'borda recheada', 'recheio', 'recheio de borda'
 ];
 
 const isPizza = (it) => {
-  const s = `${it?.category||''} ${it?.name||it?.nome||''}`.toLowerCase();
-  return s.includes('pizza') || isHalfCombo(it);
+  const c = catOf(it);
+  if (!c) return false;
+  // pizza se a categoria contém alguma das palavras acima
+  return PIZZA_CATS.some(k => c.includes(k));
 };
 
 const isBorda = (it) => {
-  const s = `${it?.category||''} ${it?.name||it?.nome||''} ${it?.code||''}`.toLowerCase();
-  if (it?.kind === 'borda' || it?.border === true || it?.addon === 'borda') return true;
-  if (s.startsWith('bord')) return true;
-  return BORDA_KEYWORDS.some(k => s.includes(k));
+  const c = catOf(it);
+  if (!c) return false;
+  // borda se a categoria contém alguma das palavras acima
+  return BORDA_CATS.some(k => c.includes(k));
 };
 
+// tipo da pizza/borda (para validação doce/salgada)
 const tipo = (it) => {
-  const s = `${it?.category||''} ${it?.name||it?.nome||''}`.toLowerCase();
+  const c = catOf(it);
+  if (/doce/.test(c)) return 'doce';
+  if (/salgad/.test(c)) return 'salgada';
+  // fallback leve: olha o nome se a categoria não indicar
+  const s = `${it?.name || it?.nome || ''}`.toLowerCase();
   const doces = ['doce','brigadeiro','prestigio','prestígio','chocolate','banana','romeu','julieta','goiabada','nutella','churros','leite ninho','ninho'];
   return doces.some(w => s.includes(w)) ? 'doce' : 'salgada';
 };
 
+
+  
 // listas (deixe logo abaixo dos detectores)
 const pizzas = items.filter(isPizza);
 const bordas = items.filter(isBorda);
