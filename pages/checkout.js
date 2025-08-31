@@ -74,7 +74,7 @@ const tipo = (it) => {
 
  
  
-// const isBorda = it => /borda/i.test(it?.category || it?.name || it?.nome || '');
+ 
   const tipo = it => /\bdoce\b/i.test(String(it?.name || it?.nome || '')) ? 'doce' : 'salgada';
 
   const pizzas = items.filter(isPizza);
