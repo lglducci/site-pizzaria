@@ -1,6 +1,6 @@
  // components/MenuItemCard.js
 import { useCart } from '../context/CartContext';
-
+const { items, addItem } = useCart();
 const fmt = (n) => Number(n ?? 0).toFixed(2);
 const num = (x) => {
   if (typeof x === 'number' && isFinite(x)) return x;
@@ -8,6 +8,44 @@ const num = (x) => {
   const s = String(x).replace(/[^\d,.-]/g, '').replace(/\.(?=\d{3}(?:\D|$))/g, '').replace(',', '.');
   const n = Number(s);
   return isFinite(n) ? n : 0;
+};
+
+
+// Detecta item de BORDA
+const cat = String(item?.categoria || '').toLowerCase();
+const isBorderItem = cat.includes('borda') || /borda|requeij|catupir|cheddar/i.test(item?.nome || '');
+
+// Adiciona este item como BORDA de uma pizza já no carrinho
+const addAsBorder = () => {
+  const code = (prompt('Código da pizza que receberá a borda (ex.: 36):') || '').trim();
+  if (!code) return;
+
+  // acha a pizza pelo código (ex.: "36" de "36:U")
+  const target = items.find(
+    (x) => String(x.code ?? x.id ?? '').replace(/:.*/, '') === code
+  );
+  if (!target) { alert('Pizza não encontrada no carrinho. Adicione a pizza primeiro.'); return; }
+
+  const size = String(target.size || 'G').toUpperCase();
+  const price = size === 'M'
+    ? (item.preco_medio ?? item.preco)
+    : (item.preco_grande ?? item.preco);
+  if (price == null) { alert('Este item não tem preço para o tamanho da pizza.'); return; }
+
+  addItem({
+    id: `border-${item.id}:${code}:${size}`,
+    type: 'border_combo',
+    qtd: 1,
+    size,
+    borderId: item.id,
+    borderName: item.nome,
+    targetCode: code,
+    targetName: String(target.name || target.nome || 'Pizza'),
+    name: `Borda ${item.nome}  ${code} - ${String(target.name || target.nome)} (${size})`,
+    price,
+    preco: price,
+  });
+  alert('Borda adicionada à pizza escolhida!');
 };
 
 export default function MenuItemCard({ item }) {

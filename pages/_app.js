@@ -1,6 +1,12 @@
-import '../styles/globals.css';
-import '../styles.css';
-console.log('APP carregado');
-export default function App({ Component, pageProps }) {
-  return <Component {...pageProps} />;
+ // pages/_app.js
+import '../styles/globals.css'; // pode remover se não usar
+//import { CartProvider } from '../CartContext'; // <-- seu CartContext está na RAIZ do repo
+import { CartProvider } from '../context/CartContext';
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    <CartProvider>
+      <Component {...pageProps} />
+    </CartProvider>
+  );
 }
