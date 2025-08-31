@@ -191,6 +191,8 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
   };
 
   // === FLUXO: Carrinho → Associação → Fechar ===
+
+ 
   const continuarCheckout = () => {
     if (bordas.length > 0) {
       setCheckoutStep('assoc');
@@ -371,14 +373,24 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
       {/* AÇÃO */}
       {checkoutStep === 'cart' && (
         <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
-          <button
-            className="btn primary"
-            onClick={continuarCheckout}
-            style={{ background: '#dc2626', color: '#fff', padding: '10px 18px', borderRadius: 8, border: 0, cursor: 'pointer' }}
-          >
-            Continuar
-          </button>
-        </div>
+     //     <button
+    //        className="btn primary"
+    //        onClick={continuarCheckout}
+     //       style={{ background: '#dc2626', color: '#fff', padding: '10px 18px', borderRadius: 8, border: 0, cursor: 'pointer' }}
+    //      >
+       //     Continuar
+       //   </button>
+       // </div>
+       <button
+  className="btn primary"
+  onClick={continuarCheckout}
+  style={{ background: '#dc2626', color: '#fff', padding: '10px 18px', borderRadius: 8, border: 0, cursor: 'pointer' }}
+>
+  Continuar
+</button>
+       
+         
+
       )}
 
       {/* Fundo global */}
