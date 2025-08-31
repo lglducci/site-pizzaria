@@ -1,7 +1,7 @@
    // pages/index.js
 import { useMemo, useState } from 'react';
 import { useCart } from '../context/CartContext';
-import MenuItemCard from '../components/MenuItemCard';
+import MenuItemCard from '../components/MenuItemCard';    
 
 // endpoint do cardápio
 const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico';
@@ -119,4 +119,5 @@ function HomeInner({ menu, error }) {
 export default function Home(props) {
   return <HomeInner {...props} />;
 }
+
 
