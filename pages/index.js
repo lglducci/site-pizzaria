@@ -1,9 +1,9 @@
-  // pages/index.js
+   // pages/index.js
 import { useMemo, useState } from 'react';
 import { CartProvider, useCart } from '../context/CartContext';
 import MenuItemCard from '../components/MenuItemCard';
 import CartDrawer from '../components/CartDrawer';
-import { addToCart, migrateCartCategories } from '../lib/cart';
+
 const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico';
 
 function toNumber(x) {
@@ -101,5 +101,3 @@ export default function Home(props) {
     </CartProvider>
   );
 }
-
- 
