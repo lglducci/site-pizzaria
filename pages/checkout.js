@@ -44,8 +44,26 @@ export default function Checkout() {
   // Passo atual: 'cart' (carrinho) ou 'assoc' (associar borda ↔ pizza)
   const [checkoutStep, setCheckoutStep] = useState('cart');
   // Mapa: id da BORDA -> id da PIZZA
-  const [assoc, setAssoc] = useState({});
+ 
+ // const [assoc, setAssoc] = useState({});
 
+// Mapa por UNIDADE de borda: "id#idx" -> pizzaId
+const [assocUnits, setAssocUnits] = useState({});
+
+// Cria uma entrada por unidade (respeita qtd)
+const borderUnits = useMemo(() =>
+  bordas.flatMap(b =>
+    Array.from({ length: b?.qtd || 1 }, (_, i) => ({
+      key: `${b.id}#${i + 1}`,   // ex.: "123#1"
+      itemId: b.id,
+      idx: i + 1,
+      item: b,
+    }))
+  )
+, [bordas, items]);
+
+
+ 
   // Detectores simples (adapte se você já marca isso nos itens)
 
  
