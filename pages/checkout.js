@@ -5,8 +5,8 @@ import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
 import { isHalfCombo, isHalfPending } from '../lib/pizzaFractions';
 import { isBorderCombo, ensureNoPendingBorders } from '../lib/borderAddon';
 
-// >>> CONFIGURE <<<
-const DELIVERY_FEE = 3.00;
+// Config
+const DELIVERY_FEE = 3.0;
 
 const fmt = (n) => Number(n ?? 0).toFixed(2);
 const toNum = (x) => {
@@ -40,111 +40,138 @@ export default function Checkout() {
     } catch {}
   }, []);
 
-  // --------- PASSO / ASSOC ---------
-  // Passo atual: 'cart' (carrinho) ou 'assoc' (associar borda ↔ pizza)
-  const [checkoutStep, setCheckoutStep] = useState('cart');
-  // Mapa: id da BORDA -> id da PIZZA
- 
- // const [assoc, setAssoc] = useState({});
-
-// Mapa por UNIDADE de borda: "id#idx" -> pizzaId
-const [assocUnits, setAssocUnits] = useState({});
-
-// Cria uma entrada por unidade (respeita qtd)
-const borderUnits = useMemo(() =>
-  bordas.flatMap(b =>
-    Array.from({ length: b?.qtd || 1 }, (_, i) => ({
-      key: `${b.id}#${i + 1}`,   // ex.: "123#1"
-      itemId: b.id,
-      idx: i + 1,
-      item: b,
-    }))
-  )
-, [bordas, items]);
-
-
- 
-  // Detectores simples (adapte se você já marca isso nos itens)
-
- 
-  //const isPizza = it => /pizza/i.test(it?.category || it?.name || it?.nome || '');
-// Detectores robustos
- 
-// === Detectores (categoria 1º, com fallback por nome) ===
-const norm = (s) => String(s||'')
-  .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  .toLowerCase().trim();
-
-const catOf = (it) => norm(it?.category || it?.categoria || it?.cat);
-
-// categorias tratadas como PIZZA
-const PIZZA_CATS = [
-  'pizza','pizzas','pizza salgada','pizza doce','salgada','doces','doce'
-];
-
-// categorias tratadas como BORDA
-const BORDA_CATS = [
-  'borda','bordas','borda recheada','recheio','recheio de borda','recheios'
-];
-
-// palavras que indicam Borda no NOME (fallback)
-const BORDA_NAME = [
-  'borda','recheada','recheio','cheddar','catupiry','catupiri','cream cheese','requeijao','requeijão',
-  'chocolate','doce de leite','nutella','goiabada'
-].map(norm);
-
-// palavras que NÃO são pizza (bebidas etc.)
-const NOT_PIZZA = [
-  'agua','água','refrigerante','refri','cerveja','coca','skol','bohemia',
-  'sprite','fanta','guarana','guaraná','suco','600ml','2l','lata','garrafa'
-];
-
-const isBorda = (it) => {
-  const c = catOf(it);
-  if (c && BORDA_CATS.some(k => c.includes(k))) return true;
-  const n = norm(`${it?.name || it?.nome || ''} ${it?.code || ''}`);
-  return BORDA_NAME.some(k => n.includes(k));
-};
-
-const isPizza = (it) => {
-  const c = catOf(it);
-  if (c && PIZZA_CATS.some(k => c.includes(k))) return true;
-  // fallback por nome/forma
-  const n = norm(`${it?.name || it?.nome || ''}`);
-  if (isBorda(it)) return false;
-  if (NOT_PIZZA.some(k => n.includes(k))) return false;
-  const hasSize = /\((g|m|p)\)/i.test(it?.name || it?.nome || '');
-  const isHalf = /\bmeia\b/.test(n);
-  return n.includes('pizza') || hasSize || isHalf;
-};
-
-// tipo (doces/salgadas) — usa categoria primeiro
-const tipo = (it) => {
-  const c = catOf(it);
-  if (/doc(e|es)/.test(c)) return 'doce';
-  if (/salgad/.test(c)) return 'salgada';
-  const n = norm(`${it?.name || it?.nome || ''}`);
-  const doces = ['doce','brigadeiro','prestigio','prestigio','chocolate','banana','romeu','julieta','goiabada','nutella','churros','leite ninho','ninho'];
-  return doces.some(w => n.includes(w)) ? 'doce' : 'salgada';
-};
-
-// listas (APENAS UMA VEZ!)
-const pizzas = items.filter(isPizza);
-const bordas = items.filter(isBorda);
-
-// debug: veja as categorias que estão vindo
-if (typeof window !== 'undefined') {
-  const cats = Array.from(new Set(items.map(it => catOf(it))));
-  console.log('CATEGORIAS:', cats, 'pizzas:', pizzas, 'bordas:', bordas);
-}
-
-  
-
   const subtotal = useMemo(
     () => items.reduce((s, it) => s + toNum(it?.price ?? it?.preco) * (it?.qtd || 1), 0),
     [items]
   );
   const total = subtotal + DELIVERY_FEE;
+
+  // --------- PASSO / ASSOC ---------
+  const [checkoutStep, setCheckoutStep] = useState('cart'); // 'cart' | 'assoc'
+
+  // === Detectores (categoria 1º, com fallback por nome) ===
+  const norm = (s) =>
+    String(s || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+
+  const catOf = (it) => norm(it?.category || it?.categoria || it?.cat);
+
+  const PIZZA_CATS = [
+    'pizza',
+    'pizzas',
+    'pizza salgada',
+    'pizza doce',
+    'salgada',
+    'doces',
+    'doce',
+  ];
+
+  const BORDA_CATS = [
+    'borda',
+    'bordas',
+    'borda recheada',
+    'recheio',
+    'recheio de borda',
+    'recheios',
+  ];
+
+  const BORDA_NAME = [
+    'borda',
+    'recheada',
+    'recheio',
+    'cheddar',
+    'catupiry',
+    'catupiri',
+    'cream cheese',
+    'requeijao',
+    'requeijão',
+    'chocolate',
+    'doce de leite',
+    'nutella',
+    'goiabada',
+  ].map(norm);
+
+  const NOT_PIZZA = [
+    'agua',
+    'água',
+    'refrigerante',
+    'refri',
+    'cerveja',
+    'coca',
+    'skol',
+    'bohemia',
+    'sprite',
+    'fanta',
+    'guarana',
+    'guaraná',
+    'suco',
+    '600ml',
+    '2l',
+    'lata',
+    'garrafa',
+  ];
+
+  const isBorda = (it) => {
+    const c = catOf(it);
+    if (c && BORDA_CATS.some((k) => c.includes(k))) return true;
+    const n = norm(`${it?.name || it?.nome || ''} ${it?.code || ''}`);
+    return BORDA_NAME.some((k) => n.includes(k));
+  };
+
+  const isPizza = (it) => {
+    const c = catOf(it);
+    if (c && PIZZA_CATS.some((k) => c.includes(k))) return true;
+    const n = norm(`${it?.name || it?.nome || ''}`);
+    if (isBorda(it)) return false;
+    if (NOT_PIZZA.some((k) => n.includes(k))) return false;
+    const hasSize = /\((g|m|p)\)/i.test(it?.name || it?.nome || '');
+    const isHalf = /\bmeia\b/.test(n);
+    return n.includes('pizza') || hasSize || isHalf;
+  };
+
+  const tipo = (it) => {
+    const c = catOf(it);
+    if (/doc(e|es)/.test(c)) return 'doce';
+    if (/salgad/.test(c)) return 'salgada';
+    const n = norm(`${it?.name || it?.nome || ''}`);
+    const doces = [
+      'doce',
+      'brigadeiro',
+      'prestigio',
+      'prestigio',
+      'chocolate',
+      'banana',
+      'romeu',
+      'julieta',
+      'goiabada',
+      'nutella',
+      'churros',
+      'leite ninho',
+      'ninho',
+    ];
+    return doces.some((w) => n.includes(w)) ? 'doce' : 'salgada';
+  };
+
+  const pizzas = useMemo(() => items.filter(isPizza), [items]);
+  const bordas = useMemo(() => items.filter(isBorda), [items]);
+
+  // Associação por UNIDADE de borda (suporta qtd>1)
+  const [assocUnits, setAssocUnits] = useState({}); // { "bordaId#1": pizzaId, ... }
+  const borderUnits = useMemo(
+    () =>
+      bordas.flatMap((b) =>
+        Array.from({ length: b?.qtd || 1 }, (_, i) => ({
+          key: `${b.id}#${i + 1}`,
+          itemId: b.id,
+          idx: i + 1,
+          item: b,
+        }))
+      ),
+    [bordas]
+  );
 
   // rótulo de exibição do item
   const displayLine = (it) => {
@@ -164,62 +191,66 @@ if (typeof window !== 'undefined') {
     }));
   }, [items]);
 
- 
-  // validações
-  // validações
-const validar = () => {
-  // campos obrigatórios
-  if (!nome.trim()) return 'Informe seu nome.';
-  if (!telefone.trim()) return 'Informe seu telefone.';
-  if (!ruaNumero.trim()) return 'Informe rua e número.';
-  if (!bairro.trim()) return 'Informe o bairro.';
-  if (!pagamento.trim()) return 'Escolha a forma de pagamento.';
-  if (!items.length) return 'Seu carrinho está vazio.';
+  // validações (inclui bordas por unidade)
+  const validar = () => {
+    // campos obrigatórios
+    if (!nome.trim()) return 'Informe seu nome.';
+    if (!telefone.trim()) return 'Informe seu telefone.';
+    if (!ruaNumero.trim()) return 'Informe rua e número.';
+    if (!bairro.trim()) return 'Informe o bairro.';
+    if (!pagamento.trim()) return 'Escolha a forma de pagamento.';
+    if (!items.length) return 'Seu carrinho está vazio.';
 
-  // valida frações (meias)
-  try {
-    ensureNoPendingFractions(items);
-  } catch (e) {
-    return e.message || 'Há meias pizzas pendentes. Complete as frações.';
-  }
-
-  // --- REGRAS DE BORDA (por unidade) ---
-  const pizzasLocal = items.filter(isPizza);
-  const bordasLocal = items.filter(isBorda);
-
-  // se há borda, precisa haver pizza
-  if (bordasLocal.length && !pizzasLocal.length) {
-    return 'Há borda no carrinho, mas nenhuma pizza.';
-  }
-
-  // cada borda precisa estar associada, e ser compatível (doce/salgada)
-  for (const b of bordasLocal) {
-    const q = b?.qtd || 1;
-    const links = q > 1 ? b?.linkedToList : (b?.linkedTo ? [b.linkedTo] : []);
-
-    // pendência de associação
-    if (!Array.isArray(links) || links.length !== q || links.some(v => !v)) {
-      return 'Há bordas pendentes. Associe cada borda a uma pizza.';
+    // frações
+    try {
+      ensureNoPendingFractions(items);
+    } catch (e) {
+      return e.message || 'Há meias pizzas pendentes. Complete as frações.';
     }
 
-    // compatibilidade doce/salgada e existência da pizza
-    for (const pid of links) {
-      const p = items.find(x => x.id === pid);
-      if (!p) return 'Há bordas pendentes. Associe cada borda a uma pizza válida.';
-      if (tipo(p) !== tipo(b)) {
-        return `Borda “${b.name || b.nome}” (${tipo(b)}) incompatível com a pizza escolhida (${tipo(p)}).`;
+    // regra de bordas (explícita)
+    const pizzasLocal = items.filter(isPizza);
+    const bordasLocal = items.filter(isBorda);
+
+    if (bordasLocal.length && !pizzasLocal.length) {
+      return 'Há borda no carrinho, mas nenhuma pizza.';
+    }
+
+    for (const b of bordasLocal) {
+      const q = b?.qtd || 1;
+      const links =
+        q > 1 ? b?.linkedToList : b?.linkedTo ? [b.linkedTo] : [];
+
+      if (!Array.isArray(links) || links.length !== q || links.some((v) => !v)) {
+        return 'Há bordas pendentes. Associe cada borda a uma pizza.';
+      }
+
+      for (const pid of links) {
+        const p = items.find((x) => x.id === pid);
+        if (!p) return 'Há bordas pendentes. Associe cada borda a uma pizza válida.';
+        if (tipo(p) !== tipo(b)) {
+          return `Borda “${b.name || b.nome}” (${tipo(b)}) incompatível com a pizza escolhida (${tipo(p)}).`;
+        }
       }
     }
-  }
 
-  return null;
-};
+    // fallback: se sua lib validar também:
+    try {
+      ensureNoPendingBorders(items);
+    } catch (e) {
+      return e.message || 'Há bordas pendentes. Associe cada borda a uma pizza compatível.';
+    }
 
+    return null;
+  };
 
   // >>>>>>>>>> CONFIRMAR (aguarda webhook, guarda retorno e redireciona) <<<<<<<<<<
   const confirmar = async () => {
     const erro = validar();
-    if (erro) { alert(erro); return; }
+    if (erro) {
+      alert(erro);
+      return;
+    }
 
     const payload = {
       cliente: {
@@ -239,11 +270,10 @@ const validar = () => {
     // --- MENSAGEM FORMATADA (com endereço) ---
     const enderecoLinha = `${ruaNumero}${bairro ? ' - ' + bairro : ''}`;
     const linhasFmt = linhas
-      .map(l => `       ${l.qtd}x ${l.descricao} - R$ ${fmt(l.preco)}`)
+      .map((l) => `       ${l.qtd}x ${l.descricao} - R$ ${fmt(l.preco)}`)
       .join('\n');
 
-    const mensagemFormatada =
-`Pedido nº 
+    const mensagemFormatada = `Pedido nº 
 Entrega para: ${enderecoLinha}
 Resumo:
 ${linhasFmt}
@@ -252,32 +282,45 @@ Entrega: R$ ${fmt(DELIVERY_FEE)}
 Total: R$ ${fmt(total)}
 ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
 
-    // objeto final que vai pro webhook (payload + mensagem_formatada)
-    const body = { ...payload, mensagem_formatada: mensagemFormatada, mensagem: mensagemFormatada };
+    const body = {
+      ...payload,
+      mensagem_formatada: mensagemFormatada,
+      mensagem: mensagemFormatada,
+    };
 
     try {
-      const res = await fetch('https://primary-production-d79b.up.railway.app/webhook/finalizapedido', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
+      const res = await fetch(
+        'https://primary-production-d79b.up.railway.app/webhook/finalizapedido',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        }
+      );
       if (!res.ok) throw new Error('HTTP ' + res.status);
 
       const ct = res.headers.get('content-type') || '';
       let resposta;
       try {
-        resposta = ct.includes('application/json') ? await res.json() : { raw: await res.text() };
+        resposta = ct.includes('application/json')
+          ? await res.json()
+          : { raw: await res.text() };
       } catch {
-        resposta = { raw: await res.text?.() ?? '' };
+        resposta = { raw: (await res.text?.()) ?? '' };
       }
 
       if (typeof window !== 'undefined') {
-        sessionStorage.setItem('pedido_confirmacao', JSON.stringify({
-          resposta,
-          payloadEnviado: payload,
-          timestamp: Date.now(),
-        }));
-        try { localStorage.removeItem('cart'); } catch {}
+        sessionStorage.setItem(
+          'pedido_confirmacao',
+          JSON.stringify({
+            resposta,
+            payloadEnviado: payload,
+            timestamp: Date.now(),
+          })
+        );
+        try {
+          localStorage.removeItem('cart');
+        } catch {}
       }
 
       router.push('/confirmacao');
@@ -287,8 +330,6 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
   };
 
   // === FLUXO: Carrinho → Associação → Fechar ===
-
- 
   const continuarCheckout = () => {
     if (bordas.length > 0) {
       setCheckoutStep('assoc');
@@ -297,45 +338,54 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
     confirmar();
   };
 
-
- 
-
- const salvarAssociacaoEFechar = () => {
-  // 1) todas as unidades precisam estar associadas
-  const pend = borderUnits.filter(u => !assocUnits[u.key]);
-  if (pend.length) { alert('Associe TODAS as bordas às pizzas.'); return; }
-
-  // 2) valida compatibilidade doce/salgada
-  for (const u of borderUnits) {
-    const b = u.item;
-    const pid = assocUnits[u.key];
-    const p = pizzas.find(x => x.id === pid);
-    if (p && tipo(p) !== tipo(b)) {
-      alert(`Borda “${b.name || b.nome}” incompatível com a pizza escolhida (doce/salgada).`);
+  const salvarAssociacaoEFechar = () => {
+    // 1) todas as unidades precisam estar associadas
+    const pend = borderUnits.filter((u) => !assocUnits[u.key]);
+    if (pend.length) {
+      alert('Associe TODAS as bordas às pizzas.');
       return;
     }
-  }
 
-  // 3) monta { itemId -> [pizzaIds...] } na ordem das unidades
-  const byItem = {};
-  for (const u of borderUnits) {
-    const pid = assocUnits[u.key];
-    (byItem[u.itemId] ||= []).push(pid);
-  }
+    // 2) valida compatibilidade doce/salgada
+    for (const u of borderUnits) {
+      const b = u.item;
+      const pid = assocUnits[u.key];
+      const p = pizzas.find((x) => x.id === pid);
+      if (p && tipo(p) !== tipo(b)) {
+        alert(
+          `Borda “${b.name || b.nome}” incompatível com a pizza escolhida (doce/salgada).`
+        );
+        return;
+      }
+    }
 
-  // 4) grava nos itens: se qtd>1 usa linkedToList; se qtd=1 usa linkedTo
-  setItems(prev => prev.map(it => {
-    if (!isBorda(it)) return it;
-    const list = byItem[it.id] || [];
-    const q = it?.qtd || 1;
-    if (q > 1) return { ...it, linkedToList: list, linkedTo: undefined };
-    return { ...it, linkedTo: list[0] || null, linkedToList: undefined };
-  }));
+    // 3) monta { itemId -> [pizzaIds...] } na ordem das unidades
+    const byItem = {};
+    for (const u of borderUnits) {
+      const pid = assocUnits[u.key];
+      (byItem[u.itemId] ||= []).push(pid);
+    }
 
-  setCheckoutStep('cart');
-  setTimeout(() => confirmar(), 0);
-};
+    // 4) grava nos itens: se qtd>1 usa linkedToList; se qtd=1 usa linkedTo
+    setItems((prev) =>
+      prev.map((it) => {
+        if (!isBorda(it)) return it;
+        const list = byItem[it.id] || [];
+        const q = it?.qtd || 1;
+        if (q > 1) return { ...it, linkedToList: list, linkedTo: undefined };
+        return { ...it, linkedTo: list[0] || null, linkedToList: undefined };
+      })
+    );
 
+    setCheckoutStep('cart');
+    setTimeout(() => confirmar(), 0);
+  };
+
+  // todas as unidades já estão escolhidas?
+  const allAssigned = useMemo(
+    () => borderUnits.every((u) => !!assocUnits[u.key]),
+    [borderUnits, assocUnits]
+  );
 
   return (
     <main className="container" style={{ maxWidth: 760, margin: '24px auto' }}>
@@ -344,13 +394,15 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
       </h2>
 
       {/* FORM */}
-      <div style={{
-        background: '#ffffff',
-        padding: 16,
-        borderRadius: 8,
-        marginBottom: 16,
-        border: '1px solid #e5e5e5'
-      }}>
+      <div
+        style={{
+          background: '#ffffff',
+          padding: 16,
+          borderRadius: 8,
+          marginBottom: 16,
+          border: '1px solid #e5e5e5',
+        }}
+      >
         <input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Seu nome completo" style={inputStyle} />
         <input value={telefone} onChange={(e) => setTelefone(e.target.value)} placeholder="Telefone com DDD" style={inputStyle} />
         <input value={ruaNumero} onChange={(e) => setRuaNumero(e.target.value)} placeholder="Rua, número" style={inputStyle} />
@@ -366,7 +418,8 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
 
         <div style={{ marginTop: 8, marginBottom: 4, fontWeight: 600, color: '#0f172a' }}>Comentários:</div>
         <textarea
-          value={comentarios} onChange={(e) => setComentarios(e.target.value)}
+          value={comentarios}
+          onChange={(e) => setComentarios(e.target.value)}
           placeholder="Ex: sem cebola, entrega no portão, troco para R$ 50,00"
           rows={3}
           style={{ ...inputStyle, resize: 'vertical' }}
@@ -378,12 +431,14 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
         <span role="img" aria-label="cart">🧺</span> Seu pedido
       </h3>
 
-      <div style={{
-        background: '#ffffff',
-        padding: 16,
-        borderRadius: 8,
-        border: '1px solid #e5e5e5'
-      }}>
+      <div
+        style={{
+          background: '#ffffff',
+          padding: 16,
+          borderRadius: 8,
+          border: '1px solid #e5e5e5',
+        }}
+      >
         <div>
           {items.map((it) => (
             <div
@@ -393,7 +448,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 padding: '10px 0',
-                borderBottom: '1px solid #e5e5e5',
+                borderBottom: '1px solid '#e5e5e5',
               }}
             >
               <div style={{ maxWidth: '70%', fontWeight: 700, color: '#0f172a' }}>
@@ -412,59 +467,103 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
         </div>
       </div>
 
-      {/* >>> TELA DE ASSOCIAÇÃO: aparece entre carrinho e totais <<< */}
+      {/* TELA DE ASSOCIAÇÃO */}
       {checkoutStep === 'assoc' && (
-        <div style={{ background: '#fff', border: '1px solid #e5e5e5', borderRadius: 8, padding: 16, marginTop: 16 }}>
+        <div
+          style={{
+            background: '#fff',
+            border: '1px solid #e5e5e5',
+            borderRadius: 8,
+            padding: 16,
+            marginTop: 16,
+          }}
+        >
           <h3 style={{ marginTop: 0, color: '#0f172a' }}>Associar bordas às pizzas</h3>
 
-          {bordas.length === 0 ? (
+          {borderUnits.length === 0 ? (
             <div style={{ color: '#0f172a' }}>Não há bordas no carrinho.</div>
           ) : (
             <div style={{ display: 'grid', gap: 12 }}>
+              {borderUnits.map((u) => {
+                const b = u.item;
+                const opts = pizzas.filter((p) => tipo(p) === tipo(b));
+                return (
+                  <div
+                    key={u.key}
+                    style={{ border: '1px solid #e5e5e5', borderRadius: 8, padding: 12 }}
+                  >
+                    <div style={{ fontWeight: 600, marginBottom: 6, color: '#0f172a' }}>
+                      Borda {u.idx}/{b.qtd || 1}: {b.name || b.nome} — {tipo(b)}
+                    </div>
+                    {opts.length ? (
+                      <select
+                        value={assocUnits[u.key] || ''}
+                        onChange={(e) =>
+                          setAssocUnits((prev) => ({ ...prev, [u.key]: e.target.value }))
+                        }
+                        style={{
+                          width: '100%',
+                          padding: 10,
+                          borderRadius: 8,
+                          border: '1px solid #e5e5e5',
+                        }}
+                      >
+                        <option value="" disabled>
+                          Selecione uma pizza compatível…
+                        </option>
+                        {opts.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {(p.qtd || 1)}x {p.name || p.nome}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div style={{ color: '#b91c1c' }}>
+                        Nenhuma pizza compatível encontrada.
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
- {borderUnits.map(u => {
-  const b = u.item;
-  const opts = pizzas.filter(p => tipo(p) === tipo(b)); // doce↔doce, salgada↔salgada
-  return (
-    <div key={u.key} style={{ border: '1px solid #e5e5e5', borderRadius: 8, padding: 12 }}>
-      <div style={{ fontWeight: 600, marginBottom: 6, color: '#0f172a' }}>
-        Borda {u.idx}/{b.qtd || 1}: {b.name || b.nome} — {tipo(b)}
-      </div>
-      {opts.length ? (
-        <select
-          value={assocUnits[u.key] || ''}
-          onChange={(e) => setAssocUnits(prev => ({ ...prev, [u.key]: e.target.value }))}
-          style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e5e5' }}
-        >
-          <option value="" disabled>Selecione uma pizza compatível…</option>
-          {opts.map(p => (
-            <option key={p.id} value={p.id}>
-              {(p.qtd || 1)}x {p.name || p.nome}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <div style={{ color: '#b91c1c' }}>Nenhuma pizza compatível encontrada.</div>
+          <div
+            style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 12 }}
+          >
+            <button
+              onClick={() => setCheckoutStep('cart')}
+              style={{
+                padding: '10px 18px',
+                borderRadius: 8,
+                border: '1px solid #e5e5e5',
+                background: '#fff',
+                cursor: 'pointer',
+              }}
+            >
+              Voltar ao carrinho
+            </button>
+            <button
+              onClick={salvarAssociacaoEFechar}
+              disabled={!borderUnits.every((u) => !!assocUnits[u.key])}
+              style={{
+                padding: '10px 18px',
+                borderRadius: 8,
+                border: 0,
+                background: borderUnits.every((u) => !!assocUnits[u.key])
+                  ? '#dc2626'
+                  : '#e5e7eb',
+                color: borderUnits.every((u) => !!assocUnits[u.key]) ? '#fff' : '#6b7280',
+                cursor: borderUnits.every((u) => !!assocUnits[u.key])
+                  ? 'pointer'
+                  : 'not-allowed',
+              }}
+            >
+              Concluir associação e fechar
+            </button>
+          </div>
+        </div>
       )}
-    </div>
-  );
-})}
-
-
- const allAssigned = borderUnits.every(u => assocUnits[u.key]);
-...
-<button
-  onClick={salvarAssociacaoEFechar}
-  disabled={!allAssigned}
-  style={{
-    padding: '10px 18px', borderRadius: 8, border: 0,
-    background: allAssigned ? '#dc2626' : '#e5e7eb',
-    color: allAssigned ? '#fff' : '#6b7280',
-    cursor: allAssigned ? 'pointer' : 'not-allowed'
-  }}
->
-  Concluir associação e fechar
-</button>
 
       {/* TOTAIS */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, color: '#0f172a' }}>
@@ -479,19 +578,26 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
         <div>Total</div>
         <div>R$ {fmt(total)}</div>
       </div>
-{/* AÇÃO */}
-{checkoutStep === 'cart' && (
-  <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
-    <button
-      className="btn primary"
-      onClick={continuarCheckout}
-      style={{ background: '#dc2626', color: '#fff', padding: '10px 18px', borderRadius: 8, border: 0, cursor: 'pointer' }}
-    >
-      Continuar
-    </button>
-  </div>
-)}
-    
+
+      {/* AÇÃO */}
+      {checkoutStep === 'cart' && (
+        <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+          <button
+            className="btn primary"
+            onClick={continuarCheckout}
+            style={{
+              background: '#dc2626',
+              color: '#fff',
+              padding: '10px 18px',
+              borderRadius: 8,
+              border: 0,
+              cursor: 'pointer',
+            }}
+          >
+            Continuar
+          </button>
+        </div>
+      )}
 
       {/* Fundo global */}
       <style jsx global>{` body { background: #f5f5f5; } `}</style>
