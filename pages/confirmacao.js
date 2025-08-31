@@ -149,7 +149,7 @@ const pedidoId = extraiNumeroPedido(resposta);
 
         {pedidoId ? (
           <div style={{ marginBottom: 10 }}>
-            Número do pedido: <strong>{pedidoId}</strong>
+             Entrega para: <strong>{enderecoStr || '—'}</strong>
           </div>
         ) : null}
 
