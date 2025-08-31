@@ -2,13 +2,13 @@
   --primary:#42a5f5  ;          /* azul mais claro 1  #42a5f5, 120a8f */
   --bg:#f6f9fc;
   --text:#1e3a8a;             /* texto azul */
-  --muted:#6b7280; 
+  --muted:#6b7280;
   --card:#ffffff;
   --border:#e5e7eb;
   --ok:#10b981;
   --danger:#ef4444;
 }
- 
+
 *{ box-sizing:border-box }
 html,body{ height:100% }
 body{
