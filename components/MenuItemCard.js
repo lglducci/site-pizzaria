@@ -22,7 +22,7 @@ export default function MenuItemCard({ item }) {
   categoria: item.categoria,  // ✅ AGORA vai ser propagada!
 });
 
-     
+       
   };
 
 
@@ -84,6 +84,7 @@ export default function MenuItemCard({ item }) {
     </div>
   );
 }
+
 
 
 
