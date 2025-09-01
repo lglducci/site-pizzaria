@@ -318,14 +318,14 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
                        padding: '2px 6px',
                        borderRadius: 6,
                        background: it.categoria === 'pizza' ? '#fef3c7'
-                               // : it.categoria === 'borda' ? '#e0f2fe'
+                                  : it.categoria === 'borda' ? '#e0f2fe'
                                 : it.categoria === 'bebida' ? '#dcfce7'
                                 : it.categoria === 'esfirra' ? '#fae8ff'
                                 : '#f3f4f6',
                        color: '#0f172a'
                      }}
                    >
-                     {(it.categoria?.toUpperCase() || 'Sem Catetoria')}
+                     {(it.categoria?.toUpperCase() || 'Sem Categoria')}
                    </span>
 
                
