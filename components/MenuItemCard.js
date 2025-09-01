@@ -27,16 +27,18 @@ export default function MenuItemCard({ item }) {
   const addSimple = () => {
     const p = item?.preco ?? item?.valor ?? item?.preco_grande ?? item?.preco_medio ?? 0;
     const price = num(p);
-    addItem({ id: `${item.id}:U`, name: item.nome, code, price, preco: price, size: null });
+    addItem({ id: `${item.id}:U`, name: item.nome, code, price, preco: price, size: null , categoria: item.categoria });
   };
 
   const addSize = (size) => {
     const p = size === 'M' ? (item?.preco_medio ?? 0) : (item?.preco_grande ?? 0);
     const price = num(p);
     if (!price) return;
-    addItem({ id: `${item.id}:${size}`, name: `${item.nome} (${size})`, code, price, preco: price, size });
+    addItem({ id: `${item.id}:${size}`, name: `${item.nome} (${size})`, code, price, preco: price, size , categoria: item.categoria });
   };
 
+ 
+ 
 
 // Adicionar este item de cardápio como "Borda" de uma pizza já no carrinho
 const addAsBorder = () => {
@@ -87,6 +89,7 @@ const addAsBorder = () => {
       preco: meiaPrice,
       size: 'G',
       isHalf: true,
+     
     });
   };
 
