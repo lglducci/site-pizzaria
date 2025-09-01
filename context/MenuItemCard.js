@@ -38,7 +38,8 @@ export default function MenuItemCard({ item }) {
       preco: meiaPrice,
       size: 'G',
       isHalf: true,
-      code,           // <<< número vai junto
+      code,  
+      categoria: item.categoria, // <<< número vai junto
     });
   };
 
@@ -83,6 +84,7 @@ export default function MenuItemCard({ item }) {
     </div>
   );
 }
+
 
 
 
