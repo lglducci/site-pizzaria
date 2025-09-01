@@ -27,22 +27,21 @@ export default function MenuItemCard({ item }) {
 
 
  const addHalf = () => {
-    const base = item?.preco_grande ?? item?.preco ?? item?.valor ?? item?.preco_medio;
-    if (base == null) return;
-    const meiaPrice = num(base) / 2;
-    const code = item?.numero ?? item?.codigo ?? item?.id;
-    addItem({
-      id: `${item.id}:H`,
-      name: `${item.nome} (1/2)`,
-      price: meiaPrice,
-      preco: meiaPrice,
-      size: 'G',
-      isHalf: true,
-      code,  
-      categoria: item.categoria, // <<< número vai junto
-    });
-  };
-
+  const base = item?.preco_grande ?? item?.preco ?? item?.valor ?? item?.preco_medio;
+  if (base == null) return;
+  const meiaPrice = Number(base) / 2;
+  const code = item?.numero ?? item?.codigo ?? item?.id;
+  addItem({
+    id: `${item.id}:H`,
+    name: `${item.nome} (1/2)`,
+    price: meiaPrice,
+    preco: meiaPrice,
+    size: 'G',
+    isHalf: true,
+    code,
+    categoria: item.categoria,
+  });
+};
 
  
   
@@ -84,6 +83,7 @@ export default function MenuItemCard({ item }) {
     </div>
   );
 }
+
 
 
 
