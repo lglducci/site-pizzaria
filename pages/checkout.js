@@ -307,7 +307,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
               <div style={{ maxWidth: '70%', color: '#0f172a', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                 <span style={{ fontWeight: 700 }}>{`${it.qtd || 1} x ${displayLine(it)}`}</span>
 
-                {/* badge da categoria pra você ver na tela */}
+                {/* badge da  pra você ver na tela */}
                 <span style={{ fontSize: 12, padding: '2px 6px', borderRadius: 6, background: '#eef2ff', color: '#3730a3' }}>
               
                 </span>
@@ -317,15 +317,18 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
                        fontSize: 12,
                        padding: '2px 6px',
                        borderRadius: 6,
-                       background: it.categoria === 'pizza' ? '#fef3c7'
-                                  : it.categoria === 'borda' ? '#e0f2fe'
+                       background: it. === 'pizza' ? '#fef3c7'
+                                  : it. === 'borda' ? '#e0f2fe'
                                 : it.categoria === 'bebida' ? '#dcfce7'
                                 : it.categoria === 'esfirra' ? '#fae8ff'
                                 : '#f3f4f6',
                        color: '#0f172a'
                      }}
                    >
-                     {(it.categoria?.toUpperCase() || 'Sem Categoria')}
+               ///      {(it.categoria?.toUpperCase() || 'Sem Categoria')}
+
+{it.categoria ? it.categoria.charAt(0).toUpperCase() + it.categoria.slice(1).toLowerCase() : 'Sem categoria'}
+
                    </span>
 
                
