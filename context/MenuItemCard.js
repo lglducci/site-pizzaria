@@ -8,7 +8,7 @@ export default function MenuItemCard({ item }) {
 
   const addSimple = () => {
     const price = item.preco || item.preco_grande || item.preco_medio || 0;
-    addItem({ id: `${item.id}:U`, name: item.nome, price, size: null });
+    addItem({ id: `${item.id}:U`, name: item.nome, price, size: null , categoria: item.categoria });
   };
 
   const addSize = (size) => {
@@ -76,6 +76,7 @@ export default function MenuItemCard({ item }) {
     </div>
   );
 }
+
 
 
 
