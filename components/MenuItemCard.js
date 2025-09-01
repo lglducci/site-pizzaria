@@ -89,6 +89,7 @@ const addAsBorder = () => {
       preco: meiaPrice,
       size: 'G',
       isHalf: true,
+       categoria: item.categoria,
      
     });
   };
