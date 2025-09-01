@@ -299,7 +299,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
       <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#0f172a' }}>
         <span role="img" aria-label="cart">🧺</span> Seu pedido
       </h3>
-
+ 
       <div style={{ background: '#fff', padding: 16, borderRadius: 8, border: '1px solid #e5e5e5' }}>
         <div>
           {items.map((it) => (
