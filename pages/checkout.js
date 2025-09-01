@@ -346,25 +346,8 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
             </div>
 
               <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-               {/* botão para marcar item como borda quando a categoria não veio */}
-               {!isPizza(it) && !isBorda(it) && (
-                <button
-                  onClick={() => marcarComoBorda(it.id, true)}
-                   style={{ border:'1px solid #e5e5e5', background:'#fff', borderRadius:6, padding:'4px 8px', cursor:'pointer' }}
-                   title="Marcar este item como Borda"
-                  >
-                   Marcar como borda
-                 </button>
-               )}
-                {isBorda(it) && it.__isBorder === true && (
-                 <button
-                   onClick={() => marcarComoBorda(it.id, false)}
-                  style={{ border:'1px solid #e5e5e5', background:'#fff', borderRadius:6, padding:'4px 8px', cursor:'pointer' }}
-                    title="Desfazer marcação de Borda"
-                  >
-                    Desmarcar
-                 </button>
-                )}
+               
+                
 
                 <div style={{ fontWeight: 700, color: '#0f172a' }}>
                   <strong>R$ {fmt(toNum(it?.price ?? it?.preco))}</strong>
