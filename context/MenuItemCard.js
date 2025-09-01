@@ -36,16 +36,7 @@ export default function MenuItemCard({ item }) {
   };
 
 
-
-
-
-
-
-
-
-
-
-
+ 
   
   return (
     <div className="card">
@@ -85,6 +76,7 @@ export default function MenuItemCard({ item }) {
     </div>
   );
 }
+
 
 
 
