@@ -309,9 +309,13 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
 
                 {/* badge da categoria pra você ver na tela */}
                 <span style={{ fontSize: 12, padding: '2px 6px', borderRadius: 6, background: '#eef2ff', color: '#3730a3' }}>
-               
-                (it.categoria?.toUpperCase() || '(SEM CATEGORIA)')
+              
                 </span>
+
+               <span style={{ fontSize: 12, padding: '2px 6px', borderRadius: 6, background: '#eef2ff', color: '#3730a3' }}>
+                 {(it.categoria?.toUpperCase() || 'SEM CATEGORIA')}
+               </span>
+               
 
                 {/* se for borda, mostra a associação */}
                 {isBorda(it) && it.linkedTo && (<>
