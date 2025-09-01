@@ -14,8 +14,15 @@ export default function MenuItemCard({ item }) {
   const addSize = (size) => {
     const price = size === 'M' ? item.preco_medio : item.preco_grande;
     if (!price) return;
- 
-     addItem({ id: `${item.id}:${size}`, name: item.nome, price, size });
+    addItem({
+  id: `${item.id}:U`,
+  name: item.nome,
+  price,
+  size: null,
+  categoria: item.categoria,  // ✅ AGORA vai ser propagada!
+});
+
+     
   };
 
 
@@ -76,6 +83,7 @@ export default function MenuItemCard({ item }) {
     </div>
   );
 }
+
 
 
 
