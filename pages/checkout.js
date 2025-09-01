@@ -310,40 +310,27 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
                 {/* badge da  pra você ver na tela */}
                 <span style={{ fontSize: 12, padding: '2px 6px', borderRadius: 6, background: '#eef2ff', color: '#3730a3' }}>
               
-                </span>
- 
-
+                </span>  
                      </span>
 
-                  <span
-                     style={{
-                       fontSize: 12,
-                       padding: '2px 6px',
-                       borderRadius: 6,
-                       background: it.categoria === 'pizza' ? '#fef3c7'
-                                : it.categoria === 'borda' ? '#e0f2fe'
-                                : it.categoria === 'bebida' ? '#dcfce7'
-                                : it.categoria === 'esfirra' ? '#fae8ff'
-                                : '#f3f4f6',
-                       color: '#0f172a'
-                     }}
-                   >
-                     {(it.categoria?.toLowerCase() || 'SEM CATEGORIA')}
-                   </span>
-
-
-
-
-
-
-
-
-
-
-
-
-
+                  
+               <span
+                 style={{
+                   fontSize: 12,
+                   padding: '2px 6px',
+                   borderRadius: 6,
+                   background: it.categoria === 'pizza' ? '#fef3c7'
+                            : it.categoria === 'borda' ? '#e0f2fe'
+                            : it.categoria === 'bebida' ? '#dcfce7'
+                            : it.categoria === 'esfirra' ? '#fae8ff'
+                            : '#f3f4f6',
+                   color: '#0f172a'
+                 }}
+               >
+                 {it.categoria ? it.categoria.charAt(0).toUpperCase() + it.categoria.slice(1).toLowerCase() : 'Sem categoria'}
+               </span>
                
+
 
                 {/* se for borda, mostra a associação */}
                 {isBorda(it) && it.linkedTo && (<>
