@@ -13,7 +13,7 @@ const toNum = (x) => {
   const s = String(x).replace(/[^\d,.-]/g, '').replace(/\.(?=\d{3}(?:\D|$))/g, '').replace(',', '.');
   const n = Number(s);
   return isFinite(n) ? n : 0;
-};
+};   
 
 // ====== ajuda: normalizar categoria quando vier em outro campo ======
 const normalizeCategory = (src) => {
