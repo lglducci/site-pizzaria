@@ -325,9 +325,9 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
                        color: '#0f172a'
                      }}
                    >
-               ///      {(it.categoria?.toUpperCase() || 'Sem Categoria')}
+                   {( it.categoria ? it.categoria.charAt(0).toUpperCase() + it.categoria.slice(1).toLowerCase()  || 'Sem Categoria')}
 
-{it.categoria ? it.categoria.charAt(0).toUpperCase() + it.categoria.slice(1).toLowerCase() : 'Sem categoria'}
+//{it.categoria ? it.categoria.charAt(0).toUpperCase() + it.categoria.slice(1).toLowerCase() : 'Sem categoria'}
 
                    </span>
 
