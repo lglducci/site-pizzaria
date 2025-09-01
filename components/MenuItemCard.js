@@ -70,6 +70,7 @@ const addAsBorder = () => {
     name: `Borda ${item.nome}  ${code} - ${String(target.name || target.nome)} (${size})`,
     price,
     preco: price,
+    categoria: item.categoria,
   };
   addItem(combo);
   alert('Borda adicionada à pizza escolhida!');
@@ -89,7 +90,7 @@ const addAsBorder = () => {
       preco: meiaPrice,
       size: 'G',
       isHalf: true,
-       categoria: item.categoria,
+      categoria: item.categoria,
      
     });
   };
