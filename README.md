@@ -8,7 +8,7 @@ Copie `.env.local.sample` para `.env.local` e preencha:
 - `NEXT_PUBLIC_N8N_MENU_URL` (GET aberto que devolve JSON do cardápio)
 - `N8N_ORDER_URL` (POST protegido, chamado no servidor)
 - `N8N_ORDER_API_KEY` (header `x-api-key` enviado para o n8n)
-
+ 
 ## Rodar local
 ```bash
 npm i
