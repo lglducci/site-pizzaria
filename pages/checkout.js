@@ -325,7 +325,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
                        color: '#0f172a'
                      }}
                    >
-                     {(it.categoria?.toUpperCase() || 'SEM CATEGORIA')}
+                     {(it.categoria?.toUpperCase() || 'Sem Catetoria')}
                    </span>
 
                
