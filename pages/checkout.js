@@ -343,7 +343,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
                 {isHalfPending(it) ? (
                   <span style={{ marginLeft: 6, color: '#d97706', fontWeight: 400 }}>(aguardando outra 1/2)</span>
                 ) : null}
-              </div>
+          //    </div>
 
            //   <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           //      {/* botão para marcar item como borda quando a categoria não veio */}
