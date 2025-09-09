@@ -4,7 +4,7 @@ import { CartProvider, useCart } from '../context/CartContext';
 import MenuItemCard from '../components/MenuItemCard';
 import CartDrawer from '../components/CartDrawer';
 import { addToCart, migrateCartCategories } from '../lib/cart';
-const UPSTREAM = 'https://primary-production-d79b.up.railway.app/webhook/cardapio_publico'; 
+const UPSTREAM = 'https://webhook.lglducci.com.br/webhook/cardapio_publico'; 
 
 function toNumber(x) {
   if (typeof x === 'number' && isFinite(x)) return x;
@@ -101,5 +101,6 @@ export default function Home(props) {
     </CartProvider>
   );
 }
+
 
 
