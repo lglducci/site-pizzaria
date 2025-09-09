@@ -44,6 +44,25 @@ const formatBRPhone = (v) => {
 };
 
 
+const extractSizeFromName = (name) => {
+  const m = String(name || '').match(/\((G|M|P)\)\s*$/i);
+  if (!m) return '';
+  const ch = m[1].toUpperCase();
+  return ch === 'G' ? 'Grande' : ch === 'M' ? 'Média' : 'Pequena';
+};
+
+const extractVolumeFromName = (name) => {
+  // pega "2L", "2.5L", "600 ml", "350ml" etc, em qualquer posição
+  const s = String(name || '');
+  const m = s.match(/(\d+(?:[.,]\d+)?)\s*(l|ml)\b/i);
+  if (!m) return '';
+  const num = m[1].replace(',', '.');
+  const unit = m[2].toLowerCase() === 'l' ? 'L' : 'ml';
+  // normaliza 2.0 -> 2
+  const pretty = num.endsWith('.0') ? num.slice(0, -2) : num;
+  return `${pretty}${unit === 'ml' ? ' ml' : 'L'}`;
+};
+
 
 
 
@@ -129,30 +148,31 @@ const displayLine = (it) => {
 };
 
 
-const sizeOrVolumeLabel = (it) => {
+ 
+
+ const sizeOrVolumeLabel = (it) => {
   const cat = (it?.categoria || it?.category || '').toString().toLowerCase();
-  // tenta em ordem: size, tamanho, volume
-  const raw = (it?.size ?? it?.tamanho ?? it?.volume ?? '').toString().trim();
-  if (!raw) return '';
 
   if (cat.includes('pizza')) {
-    const v = raw.toLowerCase();
+    const raw = (it?.size ?? it?.tamanho ?? '').toString().trim();
+    const val = raw || extractSizeFromName(it?.name || it?.nome);
+    if (!val) return '';
+    const v = val.toLowerCase();
     if (['g', 'grande'].includes(v)) return 'Grande';
     if (['m', 'medio', 'médio', 'média'].includes(v)) return 'Média';
     if (['p', 'pequena', 'peq', 'pequeno'].includes(v)) return 'Pequena';
-    return raw.charAt(0).toUpperCase() + raw.slice(1);
+    return val.charAt(0).toUpperCase() + val.slice(1);
   }
 
   if (cat.includes('bebida')) {
-    return raw; // ex.: "2L", "600 ml"
+    const raw = (it?.volume ?? '').toString().trim();
+    const val = raw || extractVolumeFromName(it?.name || it?.nome);
+    return val || '';
   }
 
-  return raw;
+  return '';
 };
 
-
-
- 
 
  
 
