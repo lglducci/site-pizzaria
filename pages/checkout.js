@@ -28,6 +28,25 @@ const normalizeCategory = (src) => {
   return v;
 };
 
+
+const onlyDigits = (s) => String(s || '').replace(/\D/g, '');
+const formatBRPhone = (v) => {
+  const d = onlyDigits(v).slice(0, 11); // até 11 dígitos
+  const isCell = d.length > 10;
+  const ddd  = d.slice(0, 2);
+  const mid  = isCell ? d.slice(2, 7) : d.slice(2, 6);
+  const last = isCell ? d.slice(7, 11) : d.slice(6, 10);
+  let out = '';
+  if (ddd)  out += `(${ddd}) `;
+  if (mid)  out += mid;
+  if (last) out += `-${last}`;
+  return out;
+};
+
+
+
+
+
 export default function Checkout() {
   const router = useRouter();
 
@@ -156,7 +175,7 @@ export default function Checkout() {
     if (!bairro.trim()) return 'Informe o bairro.';
     if (!pagamento.trim()) return 'Escolha a forma de pagamento.';
     if (!items.length) return 'Seu carrinho está vazio.';
-
+   if (onlyDigits(telefone).length < 10) return 'Informe um telefone válido (com DDD).';
     try { ensureNoPendingFractions(items); }
     catch (e) { return e.message || 'Há meias pizzas pendentes. Complete as frações.'; }
 
@@ -281,7 +300,22 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
       {/* FORM */}
       <div style={{ background: '#fff', padding: 16, borderRadius: 8, marginBottom: 16, border: '1px solid #e5e5e5' }}>
         <input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Seu nome completo" style={inputStyle} />
-        <input value={telefone} onChange={(e) => setTelefone(e.target.value)} placeholder="Telefone com DDD" style={inputStyle} />
+       
+       //<input value={telefone} onChange={(e) => setTelefone(e.target.value)} placeholder="Telefone com DDD" style={inputStyle} />
+
+   <input
+  value={telefone}
+  onChange={(e) => setTelefone(formatBRPhone(e.target.value))}
+  placeholder="Telefone com DDD"
+  style={inputStyle}
+  type="tel"
+  inputMode="numeric"
+  maxLength={15}
+  aria-label="Telefone com DDD"
+/>
+
+
+       
         <input value={ruaNumero} onChange={(e) => setRuaNumero(e.target.value)} placeholder="Rua, número" style={inputStyle} />
         <input value={bairro} onChange={(e) => setBairro(e.target.value)} placeholder="Bairro" style={inputStyle} />
         <select value={pagamento} onChange={(e) => setPagamento(e.target.value)} style={inputStyle}>
