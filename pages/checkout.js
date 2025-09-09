@@ -345,8 +345,6 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
               
                 </span>  
                   
-
-                  
                <span
                  style={{
                    fontSize: 14,
@@ -357,11 +355,14 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
                             : it.categoria === 'bebida' ? '#dcfce7'
                             : it.categoria === 'esfirra' ? '#fae8ff'
                             : '#f3f4f6',
-                   color: '#0f172a'
+                   color: '#0f172a',
                  }}
                >
-                 {it.categoria ? it.categoria.charAt(0).toUpperCase() + it.categoria.slice(1).toLowerCase() : 'Sem categoria'}
+                 <strong>
+                   {it.categoria ? it.categoria.charAt(0).toUpperCase() + it.categoria.slice(1).toLowerCase() : 'Sem categoria'}
+                 </strong>
                </span>
+                              
                
 
 
