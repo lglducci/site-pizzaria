@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   try {
     const upstream = await fetch(
-      'https://primary-production-d79b.up.railway.app/webhook/finalizapedido',
+      'https://webhook.lglducci.com.br/webhook/finalizapedido',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
