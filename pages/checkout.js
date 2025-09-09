@@ -205,7 +205,7 @@ export default function Checkout() {
     if (erro) { alert(erro); return; }
 
     const payload = {
-      cliente: { nome, telefone, endereco: `${ruaNumero}`, bairro: `${bairro}`, pagamento,
+        cliente: { nome, telefone: onlyDigits(telefone), endereco: `${ruaNumero}`, bairro: `${bairro}`, pagamento,
         comentarios: (comentarios || '').trim() || null },
       itens: linhas,
       subtotal: Number(subtotal),
