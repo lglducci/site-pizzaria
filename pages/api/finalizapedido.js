@@ -7,8 +7,8 @@ export default async function handler(req, res) {
 
   try {
     const upstream = await fetch(
-     // 'https://webhook.lglducci.com.br/webhook/finalizapedido',
-       'https://n8n.lglducci.com.br/webhook-test/finalizapedido',
+     'https://webhook.lglducci.com.br/webhook/finalizapedido',
+      
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
