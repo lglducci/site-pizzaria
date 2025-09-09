@@ -301,8 +301,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
       <div style={{ background: '#fff', padding: 16, borderRadius: 8, marginBottom: 16, border: '1px solid #e5e5e5' }}>
         <input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Seu nome completo" style={inputStyle} />
        
-       //<input value={telefone} onChange={(e) => setTelefone(e.target.value)} placeholder="Telefone com DDD" style={inputStyle} />
-
+        
    <input
   value={telefone}
   onChange={(e) => setTelefone(formatBRPhone(e.target.value))}
