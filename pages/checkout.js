@@ -117,14 +117,44 @@ export default function Checkout() {
   // escolhas da UI
   const [assocUnits, setAssocUnits] = useState({}); // { "bordaId#1": pizzaId }
 
-  // Exibição
-  const displayLine = (it) => {
-    if (isHalfCombo(it) || isHalfPending(it)) return it.name;
-    const codeTxt = it?.code ? `${String(it.code).replace(/:.*/, '')} - ` : '';
-    const base = String(it?.name || it?.nome || 'Item').replace(/\s*\((G|M|P)\)\s*$/i, '');
-    const sizeTxt = it?.size ? ` (${String(it.size).toUpperCase()})` : '';
-    return `${codeTxt}${base}${sizeTxt}`;
-  };
+  
+
+
+
+const displayLine = (it) => {
+  if (isHalfCombo(it) || isHalfPending(it)) return it.name;
+  const codeTxt = it?.code ? `${String(it.code).replace(/:.*/, '')} - ` : '';
+  const base = String(it?.name || it?.nome || 'Item').replace(/\s*\((G|M|P)\)\s*$/i, '');
+  return `${codeTxt}${base}`; // sem tamanho aqui
+};
+
+
+const sizeOrVolumeLabel = (it) => {
+  const cat = (it?.categoria || it?.category || '').toString().toLowerCase();
+  // tenta em ordem: size, tamanho, volume
+  const raw = (it?.size ?? it?.tamanho ?? it?.volume ?? '').toString().trim();
+  if (!raw) return '';
+
+  if (cat.includes('pizza')) {
+    const v = raw.toLowerCase();
+    if (['g', 'grande'].includes(v)) return 'Grande';
+    if (['m', 'medio', 'médio', 'média'].includes(v)) return 'Média';
+    if (['p', 'pequena', 'peq', 'pequeno'].includes(v)) return 'Pequena';
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
+  }
+
+  if (cat.includes('bebida')) {
+    return raw; // ex.: "2L", "600 ml"
+  }
+
+  return raw;
+};
+
+
+
+ 
+
+ 
 
   const pizzaLabelById = (pid) => {
     const p = items.find(x => x.id === pid);
@@ -341,8 +371,14 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
                 <span style={{ fontWeight: 700 }}>{`${it.qtd || 1} x ${displayLine(it)}`}</span>
 
                 {/* badge da  pra você ver na tela */}
+
+             
                 <span style={{ fontSize: 12, padding: '2px 6px', borderRadius: 6, background: '#eef2ff', color: '#3730a3' }}>
-              
+ 
+                  {(() => {
+                    const lbl = sizeOrVolumeLabel(it);
+                    return lbl ? <span style={{ marginLeft: 8, fontSize: 16, color: '#0f172a' }}>{lbl}</span> : null;
+                  })()}
                 </span>  
                   
                <span
@@ -361,6 +397,8 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
                  <strong>
                    {it.categoria ? it.categoria.charAt(0).toUpperCase() + it.categoria.slice(1).toLowerCase() : 'Sem categoria'}
                  </strong>
+ 
+                  
                </span>
                               
                
