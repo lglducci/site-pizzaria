@@ -349,8 +349,8 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
                   
                <span
                  style={{
-                   fontSize: 12,
-                   padding: '2px 6px',
+                   fontSize: 14,
+                   padding: '4px 8px',
                    borderRadius: 6,
                    background: it.categoria === 'pizza' ? '#fef3c7'
                             : it.categoria === 'borda' ? '#e0f2fe'
