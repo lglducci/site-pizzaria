@@ -474,7 +474,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
   {(() => {
     const lbl = sizeOrVolumeLabel(it);
     return lbl ? (
-      <span style={{ marginLeft: 8, fontSize: 16, color: '#0f172a' }}>{lbl}</span>
+      <span style={{ marginLeft: 8, fontSize:12, color: '#0f172a' }}>{lbl}</span>
     ) : null;
   })()}
 
@@ -599,17 +599,38 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
       </div>
 
       {/* AÇÃO */}
-      {checkoutStep === 'cart' && (
-        <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
-          <button
-            className="btn primary"
-            onClick={continuarCheckout}
-            style={{ background: '#dc2626', color: '#fff', padding: '10px 18px', borderRadius: 8, border: 0, cursor: 'pointer' }}
-          >
-            Continuar
-          </button>
-        </div>
-      )}
+    {checkoutStep === 'cart' && (
+  <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between' }}>
+    <button
+      onClick={() => router.back()} // ou: () => router.push('/')
+      style={{
+        padding: '10px 18px',
+        borderRadius: 8,
+        border: '1px solid #e5e5e5',
+        background: '#fff',
+        color: '#0f172a',
+        cursor: 'pointer',
+      }}
+    >
+      ← Voltar ao carrinho
+    </button>
+
+    <button
+      className="btn primary"
+      onClick={continuarCheckout}
+      style={{
+        background: '#dc2626',
+        color: '#fff',
+        padding: '10px 18px',
+        borderRadius: 8,
+        border: 0,
+        cursor: 'pointer',
+      }}
+    >
+      Continuar
+    </button>
+  </div>
+)}
 
       <style jsx global>{` body { background: #f5f5f5; } `}</style>
     </main>
