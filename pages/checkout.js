@@ -612,7 +612,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
         cursor: 'pointer',
       }}
     >
-      ← Voltar carrinho
+      ← Carrinho
     </button>
 
     <button
