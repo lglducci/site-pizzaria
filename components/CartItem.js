@@ -52,6 +52,37 @@ export default function CartItem(props) {
 
   const qtd = toNum(item?.qtd ?? item?.quantity ?? item?.qty ?? 1) || 1;
 
+// ...no topo do componente CartItem, logo após pegar props/item:
+
+// aceite TODOS os nomes comuns vindos do Drawer/Context
+const inc =
+  props.onInc ||
+  props.onIncrease ||
+  props.onAdd ||
+  props.onPlus ||
+  props.onAddItem ||
+  props.add ||
+  props.addItem ||
+  props.inc;
+
+const dec =
+  props.onDec ||
+  props.onDecrease ||
+  props.onMinus ||
+  props.onMinusItem ||
+  props.onRemove ||
+  props.onRemoveItem ||
+  props.remove ||
+  props.removeItem ||
+  props.dec;
+
+// e mantenha os botões chamando com o item:
+<button className="qtb" onClick={() => inc?.(item)} aria-label="Aumentar">+</button>
+<button className="qtb" onClick={() => dec?.(item)} aria-label="Diminuir">–</button>
+
+
+
+ 
   const sizeOrVolume = useMemo(() => {
     if (!categoria) return "";
     if (categoria.includes("pizza")) {
@@ -158,3 +189,4 @@ export default function CartItem(props) {
     </div>
   );
 }
+
