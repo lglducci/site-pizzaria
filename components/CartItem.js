@@ -52,10 +52,8 @@ export default function CartItem(props) {
 
  const qtd = item?.qtd ?? item?.quantity ?? item?.qty ?? 1;
 const id  = item?.id ?? item?._id ?? item?.sku ?? item?.code ?? null;
-
-  const qtd = Number(item?.qtd ?? item?.quantity ?? item?.qty ?? 1);
-
-
+ 
+ 
  
   const sizeOrVolume = useMemo(() => {
     if (!categoria) return "";
@@ -178,6 +176,7 @@ const id  = item?.id ?? item?._id ?? item?.sku ?? item?.code ?? null;
     </div>
   );
 }
+
 
 
 
