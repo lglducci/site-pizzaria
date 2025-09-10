@@ -478,8 +478,8 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
     <span
       style={{
         marginLeft: 6,
-        fontSize: 12,
-        color: '#334155',
+        fontSize: 14,
+        color: '#0f172a',
         opacity: 0.85,
       }}
     >
