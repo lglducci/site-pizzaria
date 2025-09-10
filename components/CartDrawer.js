@@ -6,12 +6,7 @@ import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
 
 
 
-<CartItem
-  key={it.id ?? idx}
-  item={it}
-  onAdd={() => addToCart(it)}      // seu método de somar
-  onMinus={() => decreaseQty(it)}  // seu método de subtrair
-/>
+ 
 
 
 const fmt = (n) => Number(n ?? 0).toFixed(2);
@@ -31,6 +26,14 @@ export default function CartDrawer({ open, onClose }) {
   };
 
   return (
+
+   <CartItem
+       key={it.id ?? idx}
+       item={it}
+       onAdd={() => addToCart(it)}      // seu método de somar
+       onMinus={() => decreaseQty(it)}  // seu método de subtrair
+     />
+ 
     <div className="drawerOverlay" onClick={onClose}>
       <div className="drawer" onClick={(e) => e.stopPropagation()}>
         <div className="header" style={{ marginBottom: 8 }}>
@@ -55,4 +58,5 @@ export default function CartDrawer({ open, onClose }) {
     </div>
   );
 }
+
 
