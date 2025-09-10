@@ -1,20 +1,29 @@
  // components/CartItem.js
 import React, { useMemo } from "react";
 
-// helpers visuais
-const fmt = (n) => Number(n ?? 0).toFixed(2);
+/* num seguro: aceita "53,50", "R$ 53,50", etc. */
+const toNum = (x) => {
+  if (typeof x === "number" && isFinite(x)) return x;
+  if (x == null) return 0;
+  const s = String(x)
+    .replace(/[^\d,.-]/g, "")
+    .replace(/\.(?=\d{3}(?:\D|$))/g, "")
+    .replace(",", ".");
+  const n = Number(s);
+  return isFinite(n) ? n : 0;
+};
+const fmt = (n) => toNum(n).toFixed(2);
 const cap = (s) =>
   s ? s.toString().charAt(0).toUpperCase() + s.toString().slice(1).toLowerCase() : "";
 
-// extrai (G|M|P) do fim do nome
+/* tamanho no fim do nome: (G|M|P) */
 const extractSizeFromName = (name) => {
   const m = String(name || "").match(/\((G|M|P)\)\s*$/i);
   if (!m) return "";
   const ch = m[1].toUpperCase();
   return ch === "G" ? "Grande" : ch === "M" ? "Média" : "Pequena";
 };
-
-// extrai volume (2L, 2.5L, 600 ml…)
+/* volume tipo 2L / 600 ml */
 const extractVolumeFromName = (name) => {
   const s = String(name || "");
   const m = s.match(/(\d+(?:[.,]\d+)?)\s*(l|ml)\b/i);
@@ -26,32 +35,40 @@ const extractVolumeFromName = (name) => {
 };
 
 export default function CartItem(props) {
-  const { item } = props;
-  const inc = props.onInc || props.onAdd || props.inc;
-  const dec = props.onDec || props.onMinus || props.dec;
+  // aceita várias formas que o pai pode mandar
+  const item =
+    props.item || props.data || props.it || props.product || props.row || {};
 
-  const categoria = (item?.categoria || item?.category || "").toString().toLowerCase();
+  const inc = props.onInc || props.onAdd || props.add || props.inc;
+  const dec = props.onDec || props.onMinus || props.minus || props.dec;
+
+  const nome = item?.name ?? item?.nome ?? item?.title ?? "Item";
+  const categoriaRaw =
+    item?.categoria ?? item?.category ?? item?.tipo ?? item?.grupo ?? "";
+  const categoria = categoriaRaw ? String(categoriaRaw).toLowerCase() : "";
+
+  const priceRaw = item?.price ?? item?.preco ?? item?.valor ?? item?.valor_unitario ?? 0;
+  const price = toNum(priceRaw);
+
+  const qtd = toNum(item?.qtd ?? item?.quantity ?? item?.qty ?? 1) || 1;
 
   const sizeOrVolume = useMemo(() => {
     if (!categoria) return "";
     if (categoria.includes("pizza")) {
-      const raw = (item?.size ?? item?.tamanho ?? "").toString().trim();
-      return raw || extractSizeFromName(item?.name || item?.nome);
+      const raw = String(item?.size ?? item?.tamanho ?? "").trim();
+      return raw || extractSizeFromName(nome);
     }
     if (categoria.includes("bebida")) {
-      const raw = (item?.volume ?? "").toString().trim();
-      return raw || extractVolumeFromName(item?.name || item?.nome);
+      const raw = String(item?.volume ?? "").trim();
+      return raw || extractVolumeFromName(nome);
     }
     return "";
-  }, [categoria, item]);
-
-  const price = Number(item?.price ?? item?.preco ?? 0);
-  const qtd = Number(item?.qtd ?? 1);
+  }, [categoria, item, nome]);
 
   return (
     <div className="ci-row">
       <div className="ci-left">
-        <div className="ci-title">{item?.name || item?.nome}</div>
+        <div className="ci-title">{nome}</div>
 
         <div className="ci-meta">
           {!!categoria && <span className="pill">{cap(categoria)}</span>}
@@ -84,8 +101,8 @@ export default function CartItem(props) {
           margin-right: 12px;
         }
         .ci-title {
-          font-size: 14px;        /* menor */
-          font-weight: 600;       /* sem strong */
+          font-size: 14px;      /* menor e legível */
+          font-weight: 600;
           color: #111827;
           line-height: 1.25;
           margin: 0 0 4px;
@@ -94,7 +111,7 @@ export default function CartItem(props) {
         .ci-meta {
           display: flex;
           align-items: center;
-          gap: 8px;               /* espaçamento uniforme */
+          gap: 8px;
           margin: 0 0 6px;
           flex-wrap: wrap;
         }
@@ -102,13 +119,13 @@ export default function CartItem(props) {
           font-size: 12px;
           padding: 2px 8px;
           border-radius: 9999px;
-          background: #f3f4f6;    /* MESMA cor para todos */
+          background: #f3f4f6;
           color: #111827;
           border: 1px solid #e5e7eb;
         }
         .ci-size {
           font-size: 12px;
-          color: #6b7280;         /* discreto, entre parênteses */
+          color: #6b7280;
         }
         .ci-price {
           font-size: 13px;
