@@ -480,8 +480,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
         marginLeft: 6,
         fontSize: 14,
         color: '#0f172a',
-        opacity: 0.85,
-         background: #f3f4f6',
+        opacity: 0.85, 
       }}
     >
        
