@@ -140,13 +140,6 @@ export default function Checkout() {
 
 
 
-const displayLine = (it) => {
-  if (isHalfCombo(it) || isHalfPending(it)) return it.name;
-  const codeTxt = it?.code ? `${String(it.code).replace(/:.*/, '')} - ` : '';
-  const base = String(it?.name || it?.nome || 'Item').replace(/\s*\((G|M|P)\)\s*$/i, '');
-  return `${codeTxt}${base}`; // sem tamanho aqui
-};
-
 
  
 
