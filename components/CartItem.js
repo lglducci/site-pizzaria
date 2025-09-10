@@ -51,7 +51,26 @@ export default function CartItem(props) {
   const price = toNum(priceRaw);
 
   const qtd = toNum(item?.qtd ?? item?.quantity ?? item?.qty ?? 1) || 1;
- 
+ const inc =
+  props.onInc ||
+  props.onIncrease ||
+  props.onAdd ||
+  props.onPlus ||
+  props.onAddItem ||
+  props.add ||
+  props.addItem ||
+  props.inc;
+
+const dec =
+  props.onDec ||
+  props.onDecrease ||
+  props.onMinus ||
+  props.onMinusItem ||
+  props.onRemove ||
+  props.onRemoveItem ||
+  props.remove ||
+  props.removeItem ||
+  props.dec;
 
 
  
@@ -161,5 +180,6 @@ export default function CartItem(props) {
     </div>
   );
 }
+
 
 
