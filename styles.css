@@ -36,6 +36,9 @@ main{ max-width:1200px; margin:0 auto; padding:20px }
 .card{ background:var(--card); border:1px solid var(--border); border-radius:14px; padding:12px; display:flex; flex-direction:column }
 
 /* >>> FOTO MENOR <<< */
+
+.ci-unit { font-weight: 400; color: #6b7280; margin-left: 4px; font-size: 12px; }
+
 .img{
   height:96px;               /* ajuste aqui: 90px se quiser ainda menor */
   aspect-ratio:auto;          /* desliga o 4/3 e usa altura fixa */
