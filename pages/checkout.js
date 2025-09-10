@@ -1,4 +1,4 @@
-  // pages/checkout.js
+    // pages/checkout.js
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
