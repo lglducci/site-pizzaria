@@ -387,63 +387,56 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
         <div>
           {items.map((it) => (
             <div key={it.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #e5e5e5' }}>
-              <div style={{ maxWidth: '70%', color: '#0f172a', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <span style={{ fontWeight: 700 }}>{`${it.qtd || 1} x ${displayLine(it)}`}</span>
+             <div style={{ maxWidth: '70%', color: '#0f172a', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+  <span style={{ fontWeight: 700 }}>{`${it.qtd || 1} x ${displayLine(it)}`}</span>
 
-                {/* badge da  pra você ver na tela */}
+  {/* badge da categoria */}
+  <span
+    style={{
+      fontSize: 14,
+      padding: '4px 8px',
+      borderRadius: 6,
+      background: it.categoria === 'pizza' ? '#fef3c7'
+               : it.categoria === 'borda' ? '#e0f2fe'
+               : it.categoria === 'bebida' ? '#dcfce7'
+               : it.categoria === 'esfirra' ? '#fae8ff'
+               : '#f3f4f6',
+      color: '#0f172a',
+    }}
+  >
+    <strong>
+      {it.categoria
+        ? it.categoria.charAt(0).toUpperCase() + it.categoria.slice(1).toLowerCase()
+        : 'Sem categoria'}
+    </strong>
+  </span>
 
-             
-                <span style={{ fontSize: 12, padding: '2px 6px', borderRadius: 6, background: '#eef2ff', color: '#3730a3' }}>
- 
+  {/* AQUI vai o tamanho/volume */}
+  {(() => {
+    const lbl = sizeOrVolumeLabel(it);
+    return lbl ? (
+      <span style={{ marginLeft: 8, fontSize: 16, color: '#0f172a' }}>{lbl}</span>
+    ) : null;
+  })()}
 
-                </span>  
-                  
-               <span
-                 style={{
-                   fontSize: 14,
-                   padding: '4px 8px',
-                   borderRadius: 6,
-                   background: it.categoria === 'pizza' ? '#fef3c7'
-                            : it.categoria === 'borda' ? '#e0f2fe'
-                            : it.categoria === 'bebida' ? '#dcfce7'
-                            : it.categoria === 'esfirra' ? '#fae8ff'
-                            : '#f3f4f6',
-                   color: '#0f172a',
-                 }}
-               >
-                 <strong>
-                   {it.categoria ? it.categoria.charAt(0).toUpperCase() + it.categoria.slice(1).toLowerCase() : 'Sem categoria'}
-                 </strong>
+  {/* associações de borda (deixe como já estava) */}
+  {isBorda(it) && it.linkedTo && (<>
+    <span style={{ opacity: 0.5 }}>—</span>
+    <span style={{ fontWeight: 600 }}>{pizzaLabelById(it.linkedTo)}</span>
+  </>)}
 
-                  {/* AQUI vai o tamanho/volume */}
-                    {(() => {
-                      const lbl = sizeOrVolumeLabel(it);
-                      return lbl ? (
-                        <span style={{ marginLeft: 8, fontSize: 16, color: '#0f172a' }}>{lbl}</span>
-                      ) : null;
-                    })()}
-                                  
-                  
-                  
-               </span>
-                              
-               
+  {isBorda(it) && Array.isArray(it.linkedToList) && it.linkedToList.length > 0 && (<>
+    <span style={{ opacity: 0.5 }}>—</span>
+    <span style={{ fontWeight: 600 }}>{it.linkedToList.filter(Boolean).map(pizzaLabelById).join(' , ')}</span>
+  </>)}
 
+  {isHalfPending(it) ? (
+    <span style={{ marginLeft: 6, color: '#d97706', fontWeight: 400 }}>(aguardando outra 1/2)</span>
+  ) : null}
+</div>
 
-                {/* se for borda, mostra a associação */}
-                {isBorda(it) && it.linkedTo && (<>
-                  <span style={{ opacity: 0.5 }}>—</span>
-                  <span style={{ fontWeight: 600 }}>{pizzaLabelById(it.linkedTo)}</span>
-                </>)}
-                {isBorda(it) && Array.isArray(it.linkedToList) && it.linkedToList.length > 0 && (<>
-                  <span style={{ opacity: 0.5 }}>—</span>
-                  <span style={{ fontWeight: 600 }}>{it.linkedToList.filter(Boolean).map(pizzaLabelById).join(' , ')}</span>
-                </>)}
-
-                {isHalfPending(it) ? (
-                  <span style={{ marginLeft: 6, color: '#d97706', fontWeight: 400 }}>(aguardando outra 1/2)</span>
-                ) : null}
-            </div>
+              
+                   
 
               <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                
