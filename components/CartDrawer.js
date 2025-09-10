@@ -26,13 +26,6 @@ export default function CartDrawer({ open, onClose }) {
   };
 
   return (
-
-   <CartItem
-       key={it.id ?? idx}
-       item={it}
-       onAdd={() => addToCart(it)}      // seu método de somar
-       onMinus={() => decreaseQty(it)}  // seu método de subtrair
-     />
  
     <div className="drawerOverlay" onClick={onClose}>
       <div className="drawer" onClick={(e) => e.stopPropagation()}>
@@ -58,5 +51,6 @@ export default function CartDrawer({ open, onClose }) {
     </div>
   );
 }
+
 
 
