@@ -471,12 +471,22 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
   </span>
 
   {/* AQUI vai o tamanho/volume */}
-  {(() => {
-    const lbl = sizeOrVolumeLabel(it);
-    return lbl ? (
-      <span style={{ marginLeft: 8, fontSize:12, color: '#0f172a' }}>{lbl}</span>
-    ) : null;
-  })()}
+ 
+{(() => {
+  const lbl = sizeOrVolumeLabel(it);
+  return lbl ? (
+    <span
+      style={{
+        marginLeft: 6,
+        fontSize: 12,
+        color: '#334155',
+        opacity: 0.85,
+      }}
+    >
+      <strong style={{ fontWeight: 700 }}>{lbl}</strong>
+    </span>
+  ) : null;
+})()}
 
   {/* associações de borda (deixe como já estava) */}
   {isBorda(it) && it.linkedTo && (<>
