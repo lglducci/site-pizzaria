@@ -607,7 +607,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
         padding: '10px 18px',
         borderRadius: 8,
         border: '1px solid #e5e5e5',
-        background: ''#dc2626',
+        background: '#dc2626',
         color: '#0f172a',
         cursor: 'pointer',
       }}
