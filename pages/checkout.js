@@ -395,10 +395,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
              
                 <span style={{ fontSize: 12, padding: '2px 6px', borderRadius: 6, background: '#eef2ff', color: '#3730a3' }}>
  
-                  {(() => {
-                    const lbl = sizeOrVolumeLabel(it);
-                    return lbl ? <span style={{ marginLeft: 8, fontSize: 16, color: '#0f172a' }}>{lbl}</span> : null;
-                  })()}
+
                 </span>  
                   
                <span
@@ -417,7 +414,16 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
                  <strong>
                    {it.categoria ? it.categoria.charAt(0).toUpperCase() + it.categoria.slice(1).toLowerCase() : 'Sem categoria'}
                  </strong>
- 
+
+                  {/* AQUI vai o tamanho/volume */}
+                    {(() => {
+                      const lbl = sizeOrVolumeLabel(it);
+                      return lbl ? (
+                        <span style={{ marginLeft: 8, fontSize: 16, color: '#0f172a' }}>{lbl}</span>
+                      ) : null;
+                    })()}
+                                  
+                  
                   
                </span>
                               
