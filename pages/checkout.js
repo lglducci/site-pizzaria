@@ -606,13 +606,14 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
       style={{
         padding: '10px 18px',
         borderRadius: 8,
-        border: '1px solid #e5e5e5',
+         {/*border: '1px solid #e5e5e5', */}
+          border: 0,
         background: '#dc2626',
-        color: '#0f172a',
+        color: '#fff',
         cursor: 'pointer',
       }}
     >
-      ← Voltar ao carrinho
+      ← Voltar carrinho
     </button>
 
     <button
