@@ -45,11 +45,28 @@ const formatBRPhone = (v) => {
 
 
 const extractSizeFromName = (name) => {
-  const m = String(name || '').match(/\((G|M|P)\)\s*$/i);
-  if (!m) return '';
-  const ch = m[1].toUpperCase();
-  return ch === 'G' ? 'Grande' : ch === 'M' ? 'Média' : 'Pequena';
+  const s = String(name || '');
+
+  // (G) ou (M) ou (P) no final
+  const paren = s.match(/\((G|M|P)\)\s*$/i);
+  if (paren) return paren[1].toUpperCase();
+
+  // ... G  /  - G  no final
+  const token = s.match(/(?:^|[\s-])(G|M|P)(?:\b|[\s-])$/i);
+  if (token) return token[1].toUpperCase();
+
+  // palavras: grande / média / medio / pequena / peq
+  const plain = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  if (/\bgrande\b/.test(plain)) return 'G';
+  if (/\bmedia\b|\bmedio\b/.test(plain)) return 'M';
+  if (/\bpequena\b|\bpeq\b|\bpequeno\b/.test(plain)) return 'P';
+
+  return '';
 };
+
+
+
+
 
 const extractVolumeFromName = (name) => {
   // pega "2L", "2.5L", "600 ml", "350ml" etc, em qualquer posição
@@ -150,28 +167,43 @@ const displayLine = (it) => {
 
  
 
- const sizeOrVolumeLabel = (it) => {
-  const cat = (it?.categoria || it?.category || '').toString().toLowerCase();
+ const sizeOrVolumeLabel = (it = {}) => {
+  const cat = String(it?.categoria || it?.category || '').toLowerCase();
 
+  // PIZZA → Grande / Média / Pequena
   if (cat.includes('pizza')) {
-    const raw = (it?.size ?? it?.tamanho ?? '').toString().trim();
-    const val = raw || extractSizeFromName(it?.name || it?.nome);
-    if (!val) return '';
-    const v = val.toLowerCase();
-    if (['g', 'grande'].includes(v)) return 'Grande';
-    if (['m', 'medio', 'médio', 'média'].includes(v)) return 'Média';
-    if (['p', 'pequena', 'peq', 'pequeno'].includes(v)) return 'Pequena';
-    return val.charAt(0).toUpperCase() + val.slice(1);
+    const raw = String((it?.size ?? it?.tamanho ?? '') || '').trim();
+    const code = raw || extractSizeFromName(it?.name || it?.nome);
+
+    if (!code) return '';
+
+    // Normaliza para o rótulo final
+    const v = code.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    if (code === 'G' || v === 'grande') return 'Grande';
+    if (code === 'M' || v.startsWith('med')) return 'Média';
+    if (code === 'P' || v.startsWith('peq') || v.startsWith('pequen')) return 'Pequena';
+
+    // fallback: capitaliza o que vier
+    return code.charAt(0).toUpperCase() + code.slice(1);
   }
 
+  // BEBIDA → 2L / 600 ml etc
   if (cat.includes('bebida')) {
-    const raw = (it?.volume ?? '').toString().trim();
-    const val = raw || extractVolumeFromName(it?.name || it?.nome);
-    return val || '';
+    const raw = String((it?.volume ?? it?.vol ?? it?.litros ?? '') || '').trim();
+    if (raw) return raw;
+
+    const s = String(it?.name || it?.nome || '');
+    const m = s.match(/(\d+(?:[.,]\d+)?)\s*(l|ml)\b/i);
+    if (!m) return '';
+    const num = m[1].replace(',', '.');
+    const unit = m[2].toLowerCase() === 'l' ? 'L' : 'ml';
+    const pretty = num.endsWith('.0') ? num.slice(0, -2) : num;
+    return unit === 'ml' ? `${pretty} ml` : `${pretty}L`;
   }
 
   return '';
 };
+
 
 
  
