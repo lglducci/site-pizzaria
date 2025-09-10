@@ -40,22 +40,27 @@ export default function CartItem({ it, inc, dec }) {
   const price = Number(it?.price ?? it?.preco ?? 0);
 
   return (
-    <div className="row">
-      <div style={{ maxWidth: '60%' }}>
-        <div style={{ fontWeight: 700 }}>
-          {title}
-          {pending ? <span style={{ marginLeft: 6, color: '#d97706' }}>(aguardando outra 1/2)</span> : null}
-        </div>
-        <div style={{ fontSize: 12, color: '#666' }}>R$ {fmt(price)}</div>
-      </div>
-      <div className="qty">
-        <button className="btn small" onClick={() => dec(it.id)}>-</button>
-        <div>{it?.qtd || 1}</div>
-        <button className="btn small" onClick={() => inc(it.id)}>+</button>
-      </div>
-    </div>
+    
 
- 
+ <div>
+  <div className="name" style={{ fontWeight: 600, color: '#0f172a', fontSize: 14, lineHeight: '18px' }}>
+    {line.name}
+  </div>
+
+  <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginTop: 4 }}>
+    {line.categoria && (
+      <span style={catBadgeStyle(line.categoria)}>
+        <strong>{cap(line.categoria)}</strong>
+      </span>
+    )}
+    {formatSize(line) && (
+      <span style={{ fontSize: 12, padding: '2px 6px', borderRadius: 6, background: '#eef2ff', color: '#0f172a' }}>
+        (<strong>{formatSize(line)}</strong>)
+      </span>
+    )}
+  </div>
+</div>
+
 
 
 
@@ -65,6 +70,7 @@ export default function CartItem({ it, inc, dec }) {
 
   );
 }
+
 
 
 
