@@ -50,6 +50,9 @@ export default function CartItem(props) {
   const priceRaw = item?.price ?? item?.preco ?? item?.valor ?? item?.valor_unitario ?? 0;
   const price = toNum(priceRaw);
 
+ const qtd = item?.qtd ?? item?.quantity ?? item?.qty ?? 1;
+const id  = item?.id ?? item?._id ?? item?.sku ?? item?.code ?? null;
+
   const qtd = Number(item?.qtd ?? item?.quantity ?? item?.qty ?? 1);
 
 
@@ -83,17 +86,27 @@ export default function CartItem(props) {
       <div className="ci-price">
          R$ {fmt(price * qtd)} <span className="ci-unit"> (R$ {fmt(price)} un)</span>
        </div>
-   
-
-      <div className="ci-qty">
-        <button className="qtb" onClick={() => dec?.(item)} aria-label="Diminuir">
-          –
-        </button>
-        <span className="qtn">{qtd}</span>
-        <button className="qtb" onClick={() => inc?.(item)} aria-label="Aumentar">
-          +
-        </button>
-      </div>
+            
+         <button
+           className="qtb"
+           onClick={() => (dec ? dec(id) : props.onDecId?.(id))}
+           aria-label="Diminuir"
+           disabled={!id}
+         >
+           –
+         </button>
+         
+         <span className="qtn">{qtd}</span>
+         
+         <button
+           className="qtb"
+           onClick={() => (inc ? inc(id) : props.onIncId?.(id))}
+           aria-label="Aumentar"
+           disabled={!id}
+         >
+           +
+         </button>
+             
 
       <style jsx>{`
         .ci-row {
@@ -165,6 +178,7 @@ export default function CartItem(props) {
     </div>
   );
 }
+
 
 
 
