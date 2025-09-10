@@ -50,27 +50,7 @@ export default function CartItem(props) {
   const priceRaw = item?.price ?? item?.preco ?? item?.valor ?? item?.valor_unitario ?? 0;
   const price = toNum(priceRaw);
 
-  const qtd = toNum(item?.qtd ?? item?.quantity ?? item?.qty ?? 1) || 1;
- const inc =
-  props.onInc ||
-  props.onIncrease ||
-  props.onAdd ||
-  props.onPlus ||
-  props.onAddItem ||
-  props.add ||
-  props.addItem ||
-  props.inc;
-
-const dec =
-  props.onDec ||
-  props.onDecrease ||
-  props.onMinus ||
-  props.onMinusItem ||
-  props.onRemove ||
-  props.onRemoveItem ||
-  props.remove ||
-  props.removeItem ||
-  props.dec;
+  
 
 
  
@@ -180,6 +160,7 @@ const dec =
     </div>
   );
 }
+
 
 
 
