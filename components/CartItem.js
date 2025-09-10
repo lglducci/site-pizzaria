@@ -50,7 +50,7 @@ export default function CartItem(props) {
   const priceRaw = item?.price ?? item?.preco ?? item?.valor ?? item?.valor_unitario ?? 0;
   const price = toNum(priceRaw);
 
-  
+  const qtd = Number(item?.qtd ?? item?.quantity ?? item?.qty ?? 1);
 
 
  
@@ -77,8 +77,13 @@ export default function CartItem(props) {
           {!!sizeOrVolume && <span className="ci-size">({sizeOrVolume})</span>}
         </div>
 
-        <div className="ci-price">R$ {fmt(price)}</div>
+       // <div className="ci-price">R$ {fmt(price)}</div>
+        <div className="ci-price">R$ {fmt(price * qtd)}</div>
       </div>
+      <div className="ci-price">
+         R$ {fmt(price * qtd)} <span className="ci-unit"> (R$ {fmt(price)} un)</span>
+       </div>
+   
 
       <div className="ci-qty">
         <button className="qtb" onClick={() => dec?.(item)} aria-label="Diminuir">
@@ -160,6 +165,7 @@ export default function CartItem(props) {
     </div>
   );
 }
+
 
 
 
