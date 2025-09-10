@@ -481,9 +481,11 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
         fontSize: 14,
         color: '#0f172a',
         opacity: 0.85,
+         background: #f3f4f6',
       }}
     >
-      <strong style={{ fontWeight: 700 }}>{lbl}</strong>
+       
+      <strong>({String(lbl).toLowerCase()})</strong>
     </span>
   ) : null;
 })()}
