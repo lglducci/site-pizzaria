@@ -77,7 +77,7 @@ export default function CartItem(props) {
           {!!sizeOrVolume && <span className="ci-size">({sizeOrVolume})</span>}
         </div>
 
-       // <div className="ci-price">R$ {fmt(price)}</div>
+       
         <div className="ci-price">R$ {fmt(price * qtd)}</div>
       </div>
       <div className="ci-price">
@@ -165,6 +165,7 @@ export default function CartItem(props) {
     </div>
   );
 }
+
 
 
 
