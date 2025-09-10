@@ -11,19 +11,20 @@ export default function MenuItemCard({ item }) {
     addItem({ id: `${item.id}:U`, name: item.nome, price, size: null , categoria: item.categoria });
   };
 
-  const addSize = (size) => {
-    const price = size === 'M' ? item.preco_medio : item.preco_grande;
-    if (!price) return;
-    addItem({
-  id: `${item.id}:U`,
-  name: item.nome,
-  price,
-  size: null,
-  categoria: item.categoria,  // ✅ AGORA vai ser propagada!
-});
+ 
 
-       
-  };
+const addSize = (size) => {
+  const price = size === 'M' ? item.preco_medio : item.preco_grande;
+  if (!price) return;
+
+  addItem({
+    id: `${item.id}:${size}`,     // diferencia M e G
+    name: item.nome,              // nome limpo (sem (G)/(M))
+    price,
+    size,                         // << grava o tamanho!
+    categoria: item.categoria,
+  });
+};
 
 
  const addHalf = () => {
@@ -83,6 +84,7 @@ export default function MenuItemCard({ item }) {
     </div>
   );
 }
+
 
 
 
