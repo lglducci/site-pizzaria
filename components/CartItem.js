@@ -55,24 +55,7 @@ export default function CartItem({ it, inc, dec }) {
       </div>
     </div>
 
-<div>
-  <div className="name" style={{ fontWeight: 600, color: '#0f172a', fontSize: 14, lineHeight: '18px' }}>
-    {line.name}
-  </div>
-
-  <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginTop: 4 }}>
-    {line.categoria && (
-      <span style={catBadgeStyle(line.categoria)}>
-        <strong>{cap(line.categoria)}</strong>
-      </span>
-    )}
-    {formatSize(line) && (
-      <span style={{ fontSize: 12, padding: '2px 6px', borderRadius: 6, background: '#eef2ff', color: '#0f172a' }}>
-        (<strong>{formatSize(line)}</strong>)
-      </span>
-    )}
-  </div>
-</div>
+ 
 
 
 
@@ -82,5 +65,6 @@ export default function CartItem({ it, inc, dec }) {
 
   );
 }
+
 
 
