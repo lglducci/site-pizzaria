@@ -43,26 +43,68 @@ const formatBRPhone = (v) => {
   return out;
 };
 
-
-const extractSizeFromName = (name) => {
-  const m = String(name || '').match(/\((G|M|P)\)\s*$/i);
-  if (!m) return '';
-  const ch = m[1].toUpperCase();
-  return ch === 'G' ? 'Grande' : ch === 'M' ? 'Média' : 'Pequena';
+ 
+// --- helpers de normalização ---
+const _norm = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+const _first = (...vals) => {
+  for (const v of vals) {
+    const s = (v ?? '').toString().trim();
+    if (s) return s;
+  }
+  return '';
 };
 
-const extractVolumeFromName = (name) => {
-  // pega "2L", "2.5L", "600 ml", "350ml" etc, em qualquer posição
-  const s = String(name || '');
+// Detecta tamanho de pizza a partir de vários campos/padrões
+const detectPizzaSize = (it) => {
+  const byField = _first(
+    it?.size, it?.tamanho, it?.tam, it?.Size, it?.opcao_tamanho, it?.options?.size, it?.details?.size
+  );
+  if (byField) return normalizePizzaSize(byField);
+
+  // tenta no nome (qualquer posição): (G|M|P), "- G", " G ", "grande|media|médio|média|pequena|peq"
+  const name = String(it?.name || it?.nome || '');
+  const mParen = name.match(/\((G|M|P)\)/i);
+  if (mParen) return normalizePizzaSize(mParen[1]);
+
+  const mToken = name.match(/(?:^|[\s-])(G|M|P)(?:\b|[\s-])/i);
+  if (mToken) return normalizePizzaSize(mToken[1]);
+
+  const mWord = _norm(name).match(/\b(grande|media|medio|medio|media|pequena|peq|pequeno)\b/i);
+  if (mWord) return normalizePizzaSize(mWord[1]);
+
+  return '';
+};
+
+const normalizePizzaSize = (v) => {
+  const s = _norm(v);
+  if (s === 'g' || s === 'grande') return 'Grande';
+  if (s === 'm' || s === 'media' || s === 'medio') return 'Média';
+  if (s === 'p' || s.startsWith('pequen') || s === 'peq') return 'Pequena';
+  // fallback bonito
+  return v.charAt(0).toUpperCase() + v.slice(1);
+};
+
+// Detecta volume de bebida por campo ou no nome
+const detectBeverageVolume = (it) => {
+  const byField = _first(it?.volume, it?.litros, it?.vol);
+  if (byField) return byField;
+
+  const s = String(it?.name || it?.nome || '');
   const m = s.match(/(\d+(?:[.,]\d+)?)\s*(l|ml)\b/i);
   if (!m) return '';
   const num = m[1].replace(',', '.');
   const unit = m[2].toLowerCase() === 'l' ? 'L' : 'ml';
-  // normaliza 2.0 -> 2
   const pretty = num.endsWith('.0') ? num.slice(0, -2) : num;
-  return `${pretty}${unit === 'ml' ? ' ml' : 'L'}`;
+  return unit === 'ml' ? `${pretty} ml` : `${pretty}L`;
 };
 
+// Rótulo final que você já usa na UI
+const sizeOrVolumeLabel = (it) => {
+  const cat = _norm(it?.categoria || it?.category || '');
+  if (cat.includes('pizza'))  return detectPizzaSize(it) || '';
+  if (cat.includes('bebida')) return detectBeverageVolume(it) || '';
+  return '';
+};
 
 
 
