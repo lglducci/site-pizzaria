@@ -44,26 +44,31 @@ const formatBRPhone = (v) => {
 };
 
 
-const extractSizeFromName = (name) => {
-  const s = String(name || '');
+const stripAccents = (s='') =>
+  String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-  // (G) ou (M) ou (P) no final
-  const paren = s.match(/\((G|M|P)\)\s*$/i);
-  if (paren) return paren[1].toUpperCase();
-
-  // ... G  /  - G  no final
-  const token = s.match(/(?:^|[\s-])(G|M|P)(?:\b|[\s-])$/i);
-  if (token) return token[1].toUpperCase();
-
-  // palavras: grande / média / medio / pequena / peq
-  const plain = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  if (/\bgrande\b/.test(plain)) return 'G';
-  if (/\bmedia\b|\bmedio\b/.test(plain)) return 'M';
-  if (/\bpequena\b|\bpeq\b|\bpequeno\b/.test(plain)) return 'P';
-
+const toSizeLabel = (v) => {
+  const x = stripAccents(String(v || '').trim().toLowerCase());
+  if (x === 'g' || x === 'grande') return 'Grande';
+  if (x === 'm' || x.startsWith('med')) return 'Média';
+  if (x === 'p' || x.startsWith('peq') || x.startsWith('pequen')) return 'Pequena';
   return '';
 };
 
+ 
+// já existia, mas deixo aqui a versão que pega (G|M|P) ou palavras no name
+const extractSizeFromName = (name) => {
+  const s = String(name || '');
+  const paren = s.match(/\((G|M|P)\)\s*$/i);
+  if (paren) return paren[1].toUpperCase();
+  const token = s.match(/(?:^|[\s-])(G|M|P)(?:\b|[\s-])$/i);
+  if (token) return token[1].toUpperCase();
+  const plain = stripAccents(s).toLowerCase();
+  if (/\bgrande\b/.test(plain)) return 'G';
+  if (/\bmedia\b|\bmedio\b/.test(plain)) return 'M';
+  if (/\bpequena\b|\bpeq\b|\bpequeno\b/.test(plain)) return 'P';
+  return '';
+};
 
 
 
@@ -81,6 +86,28 @@ const extractVolumeFromName = (name) => {
 };
 
 
+// procura tamanho no item em vários lugares
+const findAnySizeInItem = (it = {}) => {
+  const candidates = [
+    it.size, it.tamanho, it.tam,
+    it?.options?.size, it?.options?.tamanho,
+    it?.attrs?.size, it?.attrs?.tamanho,
+    extractSizeFromName(it.name || it.nome),
+  ];
+  for (const c of candidates) {
+    const lbl = toSizeLabel(c);
+    if (lbl) return lbl;
+  }
+  // varredura rasa: strings diretas no objeto
+  for (const k in it) {
+    const v = it[k];
+    if (typeof v === 'string') {
+      const lbl = toSizeLabel(v);
+      if (lbl) return lbl;
+    }
+  }
+  return '';
+};
 
 
 export default function Checkout() {
@@ -104,12 +131,23 @@ export default function Checkout() {
       const raw = JSON.parse(s);
       const arr = Array.isArray(raw) ? raw : [];
 
-      // completa category/categoria e mantém qualquer marcação manual anterior (__isBorder)
-      const fixed = arr.map(it => {
+
+             
+       const fixed = arr.map(it => {
         const catSrc = it.category ?? it.categoria ?? it.tipo ?? it.grupo ?? it.cat;
         const cat = normalizeCategory(catSrc);
-        return { ...it, category: cat, categoria: cat, __isBorder: it.__isBorder === true };
+        // se for pizza, tenta adivinhar tamanho e guarda
+        const __sizeGuess = cat === 'pizza' ? findAnySizeInItem(it) : '';
+        return {
+          ...it,
+          category: cat,
+          categoria: cat,
+          __isBorder: it.__isBorder === true,
+          __sizeGuess,
+        };
       });
+
+       
 
       setItems(fixed);
       localStorage.setItem('cart', JSON.stringify(fixed)); // deixa persistido já corrigido
@@ -167,32 +205,21 @@ const displayLine = (it) => {
 
  
 
- const sizeOrVolumeLabel = (it = {}) => {
+ 
+const sizeOrVolumeLabel = (it = {}) => {
   const cat = String(it?.categoria || it?.category || '').toLowerCase();
 
-  // PIZZA → Grande / Média / Pequena
   if (cat.includes('pizza')) {
-    const raw = String((it?.size ?? it?.tamanho ?? '') || '').trim();
-    const code = raw || extractSizeFromName(it?.name || it?.nome);
-
-    if (!code) return '';
-
-    // Normaliza para o rótulo final
-    const v = code.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-    if (code === 'G' || v === 'grande') return 'Grande';
-    if (code === 'M' || v.startsWith('med')) return 'Média';
-    if (code === 'P' || v.startsWith('peq') || v.startsWith('pequen')) return 'Pequena';
-
-    // fallback: capitaliza o que vier
-    return code.charAt(0).toUpperCase() + code.slice(1);
+    // prioridade: campo direto → chute salvo → extração do name
+    const raw = (it.size ?? it.tamanho ?? '').toString().trim();
+    const label = toSizeLabel(raw) || it.__sizeGuess || toSizeLabel(extractSizeFromName(it.name || it.nome));
+    return label || '';
   }
 
-  // BEBIDA → 2L / 600 ml etc
   if (cat.includes('bebida')) {
-    const raw = String((it?.volume ?? it?.vol ?? it?.litros ?? '') || '').trim();
+    const raw = (it.volume ?? it.vol ?? it.litros ?? '').toString().trim();
     if (raw) return raw;
-
-    const s = String(it?.name || it?.nome || '');
+    const s = String(it.name || it.nome || '');
     const m = s.match(/(\d+(?:[.,]\d+)?)\s*(l|ml)\b/i);
     if (!m) return '';
     const num = m[1].replace(',', '.');
