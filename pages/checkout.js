@@ -1,4 +1,4 @@
- // pages/checkout.js
+  // pages/checkout.js
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { ensureNoPendingFractions } from '../lib/cartSmartAdd';
@@ -139,6 +139,13 @@ export default function Checkout() {
   
 
 
+
+const displayLine = (it) => {
+  if (isHalfCombo(it) || isHalfPending(it)) return it.name;
+  const codeTxt = it?.code ? `${String(it.code).replace(/:.*/, '')} - ` : '';
+  const base = String(it?.name || it?.nome || 'Item').replace(/\s*\((G|M|P)\)\s*$/i, '');
+  return `${codeTxt}${base}`; // sem tamanho aqui
+};
 
 
  
