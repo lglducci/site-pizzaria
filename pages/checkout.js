@@ -605,8 +605,7 @@ ${(comentarios || '').trim() ? `Comentário: ${comentarios.trim()}` : ''}`;
       onClick={() => router.back()} // ou: () => router.push('/')
       style={{
         padding: '10px 18px',
-        borderRadius: 8,
-         {/*border: '1px solid #e5e5e5', */}
+        borderRadius: 8, 
           border: 0,
         background: '#dc2626',
         color: '#fff',
